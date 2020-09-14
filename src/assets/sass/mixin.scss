@@ -1,0 +1,45 @@
+@import './var.scss';
+@mixin border-x-1px {
+  position: relative;
+  &::before,
+  &::after{
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    transform: scaleX(.5);
+    background-color: $border-color;
+  }
+  &::before{ left: 0; }
+  &::after{ right: 0;}
+}
+@mixin border-y-1px {
+  position: relative;
+  &::before,
+  &::after{
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    transform: scaleY(.5);
+    background-color: $border-color;
+  }
+  &::before{ top: 0; }
+  &::after{ bottom: 0;}
+}
+@mixin line {
+  position: relative;
+  &::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 100%;
+    background-color: $border-color;
+    transform: scaleX(.5);
+    @content;
+  }
+}

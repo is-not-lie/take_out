@@ -1,18 +1,33 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <HeaderBar />
+    <CategoryMenu />
+    <h3 class="title">附近商家</h3>
+    <HomeMain />
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
-
 export default {
-  name: 'Home',
-  components: {
-    HelloWorld
+  name: 'home',
+  setup () {
+    return {}
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.title{
+  @extend .flex;
+  margin-top: rem(20);
+  margin-bottom: rem(5);
+  &::before{
+    @extend .min-line;
+    transform-origin: 100% 50%;
+  }
+  &::after{
+    @extend .min-line;
+    transform-origin: 0 50%;
+  }
+}
+</style>

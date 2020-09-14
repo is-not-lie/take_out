@@ -1,20 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
+import Home from '../views/home.vue'
 
 const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
+  { path: '/', name: 'home', component: Home, meta: { showFooter: true } },
+  { path: '/shopinfo/:id', name: 'shopinfo', component: () => import('../views/shopInfo.vue') },
+  { path: '/login', name: 'login', component: () => import('../views/login.vue') },
+  { path: '/signin', name: 'signin', component: () => import('../views/signIn.vue') },
+  { path: '/seach', name: 'seach', component: () => import('../views/seach.vue'), meta: { showFooter: true } },
+  { path: '/order', name: 'order', component: () => import('../views/order.vue'), meta: { showFooter: true } },
+  { path: '/profile', name: 'profile', component: () => import('../views/profile.vue'), meta: { showFooter: true } },
+  { path: '/position', name: 'position', component: () => import('../views/position.vue') },
+  { path: '/category/:id', name: 'category', component: () => import('../views/category.vue') }
 ]
 
 const router = createRouter({
