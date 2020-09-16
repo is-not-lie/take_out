@@ -1,24 +1,13 @@
-# take-out
+# 使用 Vue3.0 全家桶仿制美团外卖
 
-## Project setup
-```
-yarn install
-```
+首先安装依赖
 
-### Compiles and hot-reloads for development
 ```
-yarn serve
+npm install || yarn
 ```
 
-### Compiles and minifies for production
-```
-yarn build
-```
+接着运行项目
 
-### Lints and fixes files
 ```
-yarn lint
+npm start || yarn start
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
