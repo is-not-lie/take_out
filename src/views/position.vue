@@ -1,10 +1,10 @@
 <template>
   <section class="position">
     <header>
-      <div class="city">
+      <router-link :to="{ name: 'city' }" class="city">
         <span>选择城市</span>
         <i class="iconfont icon-bottom"></i>
-      </div>
+      </router-link>
       <input type="text" placeholder="小区/街道/大厦/学校名称" />
       <span class="pass" @click="$router.back()">取消</span>
     </header>
@@ -15,7 +15,7 @@
           <span>重新定位</span>
         </p>
       </div>
-      <div class="user-postion" v-if="user.isLogin">
+      <div class="user-postion" v-if="user.token">
         <p>
           <i class="iconfont icon-home"></i>
           <span>我的收获地址</span>
@@ -24,8 +24,8 @@
           <li>
             <p class="site">宫前市场 宫后巷一栋</p>
             <p class="user">
-              <span>邱锐泽先生</span>
-              <span>13671436433</span>
+              <span>test</span>
+              <span>123456789</span>
             </p>
           </li>
         </ul>
@@ -54,6 +54,7 @@ export default {
   name: 'position',
   setup () {
     const store = useStore()
+    store.dispatch('getCity')
     const state = reactive({
       user: store.state.user
     })

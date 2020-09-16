@@ -1,9 +1,10 @@
 // 操作类型判断函数
-function getActionType (index, value) {
-  if (typeof index === 'number' && value instanceof Array) return 'arr'
-  else if (typeof index === 'string' && value instanceof Object) return 'obj'
-  else if (typeof index === 'number' && typeof value === 'string') return 'str'
-}
+const _toString = Object.prototype.toString
+const isObj = (obj) => _toString.call(obj) === '[object Object]'
+const isArr = (arr) => _toString.call(arr) === '[object Array]'
+const isNum = (num) => typeof num === 'number'
+const isStr = (str) => typeof str === 'string'
+
 /*
 操作Storage的类
   new实例时必须传入一个key,且类型为字符串
@@ -21,7 +22,7 @@ function getActionType (index, value) {
 */
 export default class Storage {
   constructor (key, value, type = 'local') {
-    if (key && typeof key === 'string') {
+    if (key && isStr(key)) {
       this.key = key
       switch (type) {
         case 'local':
@@ -41,15 +42,14 @@ export default class Storage {
 
   get () {
     const { storage, key } = this
-    const value = storage.getItem(key) || {}
-    return typeof value === 'string' ? JSON.parse(value) : value
+    return JSON.parse(storage.getItem(key) || '{}')
   }
 
   set (value) {
     const { storage, key } = this
     if (value) {
       this.value = value
-      value = typeof value === 'string' ? value : JSON.stringify(value)
+      value = isStr(value) ? value : JSON.stringify(value)
       storage.setItem(key, value)
     } else throw new Error('value is required')
   }
@@ -62,33 +62,27 @@ export default class Storage {
 
   getOne (index) {
     const { value } = this
-    if (value) {
-      if (getActionType(index, value) === ('arr' || 'str')) return value[index]
-      else if (getActionType(index, value) === 'obj') return value[index]
-    } else throw new Error('value is null in storage')
+    if (isNum(index) || isStr(index)) return value[index]
+    else throw new Error('typeError: index is not number or string')
   }
 
   setOne (index, params) {
     let { value } = this
-    if (value) {
-      if (getActionType(index, value) === 'arr') value.splice(index, 1, params)
-      else if (getActionType(index, value) === 'obj') value[index] = params
-      else if (getActionType(index, value) === 'str') {
-        value = value.split().splice(index, 1, params).join()
-      }
-      this.set(value)
-    } else throw new Error('value is null in storage')
+    if (isNum(index)) {
+      if (isArr(value)) value.splice(index, 1, params)
+      else if (isStr(value)) { value = value.split().splice(index, 1, params).join() }
+    } else if (isStr(index) && isObj(value)) value[index] = params
+    else throw new Error('value is null in storage')
+    this.set(value)
   }
 
   delOne (index) {
     let { value } = this
-    if (value) {
-      if (getActionType(index, value) === 'arr') value.splice(index, 1)
-      else if (getActionType(index, value) === 'obj') delete value[index]
-      else if (getActionType(index, value) === 'str') {
-        value = value.split().splice(index, 1).join()
-      }
-      this.set(value)
-    } else throw new Error('value is null in storage')
+    if (isNum(index)) {
+      if (isArr(value)) value.splice(index, 1)
+      else if (isStr(value)) { value = value.split().splice(index, 1).join() }
+    } else if (isStr(index) && isObj(value)) delete value[index]
+    else throw new Error('value is null in storage')
+    this.set(value)
   }
 }

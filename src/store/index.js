@@ -6,7 +6,8 @@ const user = new Storage('user')
 
 export default createStore({
   state: {
-    user: user.value
+    user: user.value,
+    citys: []
   },
   mutations,
   actions,

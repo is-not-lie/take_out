@@ -4,24 +4,12 @@
   "private": true,
   "scripts": {
     "start": "vue-cli-service serve",
-    "server": "nodemon server",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "axios": "^0.20.0",
-    "cookie-parser": "^1.4.5",
     "core-js": "^3.6.5",
-    "dayjs": "^1.8.35",
-    "express": "^4.17.1",
-    "js-base64": "^3.5.2",
-    "jsonwebtoken": "^8.5.1",
-    "md5": "^2.3.0",
-    "mongoose": "^5.10.4",
-    "nodemon": "^2.0.4",
-    "request": "^2.88.2",
-    "svg-captcha": "^1.4.0",
-    "tencentcloud-sdk-nodejs": "^3.0.248",
     "vue": "^3.0.0-0",
     "vue-router": "^4.0.0-0",
     "vuex": "^4.0.0-0"

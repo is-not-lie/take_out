@@ -1,5 +1,5 @@
 <template>
-  <div class="order" v-if="user.username">
+  <div class="order" v-if="user.token">
     <section class="order-wrapper" v-for="order in 5" :key="order">
       <header class="order-header">
         <img src="../assets/images/error.png" alt="">

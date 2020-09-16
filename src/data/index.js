@@ -13,6 +13,6 @@ export const homeMenu = [
 ]
 
 export const proMenu = [
-  { name: '收获地址', icon: 'icon-position' },
-  { name: '退出登录', icon: 'icon-out' }
+  { name: '收获地址', icon: 'icon-position', type: 'site' },
+  { name: '退出登录', icon: 'icon-out', type: 'loginOut' }
 ]

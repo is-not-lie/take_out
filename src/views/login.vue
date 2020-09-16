@@ -21,10 +21,10 @@
         </div>
         <div class="login-pwd" v-show="!isPhoneLogin">
           <div class="name">
-            <input type="del" maxlength='11' minlength="6" placeholder="手机号/用户名" v-model="pwdLogin.name" />
+            <input type="del" maxlength='11' minlength="6" placeholder="手机号/用户名" v-model="pwdLogin.username" />
           </div>
           <div class="pwd">
-            <input type="password" maxlength='14' minlength="6" placeholder="密码" v-model="pwdLogin.pwd" />
+            <input type="password" maxlength='14' minlength="6" placeholder="密码" v-model="pwdLogin.password" />
           </div>
           <div class="captcha">
             <input type="tel" placeholder="验证码" maxlength='4' v-model="pwdLogin.captcha" />
@@ -45,9 +45,13 @@
 
 <script>
 import { reactive, toRefs, computed, onMounted } from 'vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import { http } from '@api'
 export default {
   setup () {
+    const { dispatch } = useStore()
+    const { replace } = useRouter()
     const state = reactive({
       isPhoneLogin: true,
       phoneLogin: {
@@ -56,78 +60,68 @@ export default {
         isDisabled: computed(() => !/^1\d{10}$/.test(state.phoneLogin.phone))
       },
       pwdLogin: {
-        name: '',
-        pwd: '',
+        username: '',
+        password: '',
         captcha: ''
       },
       sendCode: false,
       computeTime: 60,
       captcha: '',
-      svg: ''
+      svg: '',
+      CAPTCHA: ''
     })
 
     const Login = () => {
       const { isPhoneLogin } = state
       if (isPhoneLogin) {
         const { phone, code, isDisabled } = state.phoneLogin
-        console.log(phone, code, isDisabled)
-        // if (!isDisabled) {
-        /* 提示用户手机号不正确 */
-        //   this.showAlert = true
-        //   this.alertText = '请输入正确的手机号码'
-        //   return
-        // }
-        // if (!/^\d{6}$/.test(code)) {
-        //   /* 提示验证码错误 */
-        //   this.showAlert = true
-        //   this.alertText = '请输入正确的验证码'
-        //   return
-        // }
-        // this.$axios.reqLogin_sms(phone, code)
+        if (code !== state.CAPTCHA) {
+          console.log('验证码输入错误')
+        } else if (isDisabled) {
+          console.log('手机号格式错误')
+        } else {
+          dispatch('login', { params: { phone }, callback: () => replace('/') })
+        }
       } else {
-        const { name, pwd, captcha } = state.pwdLogin
-        console.log(name, pwd, captcha)
-        // if (!name) {
-        //   /* 用户名不能为空 */
-        //   this.showAlert = true
-        //   this.alertText = '请输入用户名'
-        //   return
-        // }
-        // if (!pwd) {
-        //   /* 密码不能为空 */
-        //   this.showAlert = true
-        //   this.alertText = '请输入密码'
-        //   return
-        // }
-        // if (!captcha) {
-        //   /* 验证码不能为空 */
-        //   this.showAlert = true
-        //   this.alertText = '请输入验证码'
-        //   return
-        // }
-        // this.$axios.reqLogin_pwd(name, pwd, captcha)
+        const { username, password, captcha } = state.pwdLogin
+        if (captcha.toLowerCase() !== state.captcha) {
+          console.log('验证码输入错误')
+          getCaptcha()
+        } else if (username.trim() === '' || username.length < 6) {
+          console.log('用户名格式错误')
+        } else if (password.trim() === '' || password.length < 6) {
+          console.log('密码格式错误')
+        } else {
+          dispatch('login', { params: { username, password }, callback: () => replace('/') })
+        }
       }
     }
     // 获取svg验证码
     const getCaptcha = async () => {
       const svg = await http.reqCaptcha()
       if (svg) {
-        state.captcha = svg.text
+        state.captcha = svg.text.toLowerCase()
         state.svg = svg.data
       }
     }
     // 发送短信验证码
-    const getCode = () => {
-      state.sendCode = true
-      // this.$axios.reqSendCode(this.phoneLogin.phone)
-      const intervalKey = setInterval(() => {
-        state.computeTime--
-        if (state.computeTime <= 0) {
-          clearInterval(intervalKey)
-          state.sendCode = false
-          state.computeTime = 60
-        }
-      }, 1000)
+    const getCode = async () => {
+      const { isDisabled, phone } = state.phoneLogin
+      if (isDisabled) {
+        console.log('手机号格式错误')
+      } else {
+        state.sendCode = true
+        const CAPTCHA = await http.reqSendCode(phone)
+        const intervalKey = setInterval(() => {
+          state.computeTime--
+          if (CAPTCHA || state.computeTime <= 0) {
+            clearInterval(intervalKey)
+            state.sendCode = false
+            state.computeTime = 60
+            state.CAPTCHA = CAPTCHA || ''
+          }
+        }, 1000)
+      }
     }
 
     onMounted(getCaptcha)

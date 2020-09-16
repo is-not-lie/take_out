@@ -1,15 +1,13 @@
 <template>
-  <section class="profile" v-if="user.username">
+  <section class="profile" v-if="user.token">
     <header class="user">
       <img :src="`${BASE_URL}/images/${user.avatar_url}`" />
       <span>{{user.username}}</span>
     </header>
     <ul class="profile-content">
-      <li v-for="(menu,i) in proMenu" :key="i">
-        <router-link to="">
-          <span><i class="iconfont" :class="menu.icon"></i>{{menu.name}}</span>
-          <span class="iconfont icon-right"></span>
-        </router-link>
+      <li v-for="(menu,i) in proMenu" :key="i" @touchstart="handleClick(menu.type)">
+        <span><i class="iconfont" :class="menu.icon"></i>{{menu.name}}</span>
+        <span class="iconfont icon-right"></span>
       </li>
     </ul>
   </section>
@@ -25,16 +23,37 @@
 <script>
 import { reactive, toRefs } from 'vue'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import { proMenu } from '@data'
 import { BASE_URL } from '@config'
 export default {
   name: 'profile',
   setup () {
     const store = useStore()
+    const { replace, push } = useRouter()
     const state = reactive({
       user: store.state.user
     })
-    return { proMenu, BASE_URL, ...toRefs(state) }
+
+    const loginOut = () => {
+      store.dispatch('loginOut')
+      replace('/')
+    }
+
+    const handleClick = type => {
+      switch (type) {
+        case 'site':
+          push('/position')
+          break
+        case 'loginOut':
+          loginOut()
+          break
+        default:
+          break
+      }
+    }
+
+    return { proMenu, BASE_URL, handleClick, ...toRefs(state) }
   }
 }
 </script>
@@ -60,18 +79,16 @@ export default {
   }
   .profile-content{
     li{
+      @extend .flex;
+      justify-content: space-between;
+      padding: rem(15) rem(20);
+      background-color: $bg-color2;
+      i{
+        margin-right: rem(10);
+        color: $color2;
+      }
       &:not(:nth-last-child(1)){
         border-bottom: 1px solid $border-color;
-      }
-      a{
-        @extend .flex;
-        justify-content: space-between;
-        padding: rem(15) rem(20);
-        background-color: $bg-color2;
-        i{
-          margin-right: rem(10);
-          color: $color2;
-        }
       }
     }
   }

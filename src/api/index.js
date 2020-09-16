@@ -6,5 +6,7 @@ export const http = {
   reqShopsList: (pageNum) => axios.get('/shops/list', { params: { pageNum, pageSize: PAGE_SIZE } }),
   reqCaptcha: () => axios.get('/captcha'),
   reqSendCode: (phone) => axios.get('/sendcode', { params: { phone } }),
-  reqSingIn: ({ username, password, phone }) => axios.post('/signin', { username, password, phone })
+  reqSingIn: ({ username, password, phone }) => axios.post('/signin', { username, password, phone }),
+  reqLogin: (params) => axios.post('/login', params),
+  reqCity: () => axios.get('/city')
 }

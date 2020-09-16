@@ -1,7 +1,7 @@
 <template>
   <header class="header-bar">
-    <i class="iconfont icon-position" @touchstart="push({name: 'position'})"></i>
-    <span class="site" @touchstart="push({name: 'position'})">{{'广东省潮州市枫溪区'}}</span>
+    <i class="iconfont icon-position" @touchstart="push({name: 'position', params: { id: 1 }})"></i>
+    <span class="site" @touchstart="push({name: 'position', params: { id: 1 }})">{{'广东省潮州市枫溪区'}}</span>
     <i class="iconfont icon-seach" @touchstart="push({name: 'seach'})"></i>
   </header>
 </template>
