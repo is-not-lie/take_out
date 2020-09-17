@@ -1,21 +1,25 @@
 <template>
   <div class="order" v-if="user.token">
-    <section class="order-wrapper" v-for="order in 5" :key="order">
+    <section class="order-wrapper" v-for="order in orderList" :key="order.orderId">
       <header class="order-header">
-        <img src="../assets/images/error.png" alt="">
+        <img :src="order.img" :alt="order.shopName">
         <div class="shop-name">
-          <span>{{'华莱士·全鸡汉堡（枫溪店）'}}</span>
+          <span>{{order.shopName}}</span>
           <i class="iconfont icon-right"></i>
         </div>
       </header>
       <section class="order-info">
-        <p><span>{{'板烧鸡腿堡'}}</span><span class="count">{{'x1'}}</span></p>
-        <p><span>{{'荔荔手扒鸡单人套餐'}}</span><span class="count">{{'x1'}}</span></p>
-        <p><span>{{'香酥鸡腿W'}}</span><span class="count">{{'x1'}}</span></p>
-        <p><span class="time">{{'2020-08-02 12:11'}}</span><span class="price">实付¥{{36.84}}</span></p>
+        <p v-for="(product,i) in order.productList" :key="i">
+          <span>{{product.productName}}</span>
+          <span class="count">{{product.productCount}}</span>
+        </p>
+        <p>
+          <span class="time">{{order.orderTime}}</span>
+          <span class="price">实付¥{{order.totalPrice}}</span>
+        </p>
       </section>
       <footer class="order-footer">
-        <span class="status">{{'已完成'}}</span>
+        <span class="status">{{order.status}}</span>
         <span class="again">再来一单</span>
         <span class="del">删除</span>
       </footer>
@@ -31,15 +35,22 @@
 </template>
 
 <script>
-import { reactive, toRefs } from 'vue'
+import { reactive, toRefs, onBeforeMount } from 'vue'
 import { useStore } from 'vuex'
 export default {
   name: 'order',
   setup () {
     const store = useStore()
     const state = reactive({
-      user: store.state.user
+      user: store.state.user,
+      orderList: store.state.orderList
     })
+
+    onBeforeMount(() => {
+      const { user } = state
+      if (user) store.dispatch('getOrder', { userId: user._id, callback (list) { state.orderList = list } })
+    })
+
     return toRefs(state)
   }
 }

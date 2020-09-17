@@ -54,7 +54,6 @@ export default {
   name: 'position',
   setup () {
     const store = useStore()
-    store.dispatch('getCity')
     const state = reactive({
       user: store.state.user
     })

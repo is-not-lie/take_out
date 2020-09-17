@@ -43,7 +43,7 @@ export default {
     const handleClick = type => {
       switch (type) {
         case 'site':
-          push('/position')
+          push({ name: 'position', params: { id: state.user._id } })
           break
         case 'loginOut':
           loginOut()

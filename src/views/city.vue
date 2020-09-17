@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import { reactive, toRefs } from 'vue'
+import { reactive, toRefs, onBeforeMount } from 'vue'
 import { useStore } from 'vuex'
 export default {
   name: 'city',
@@ -52,6 +52,10 @@ export default {
     const state = reactive({
       citys: store.state.citys
     })
+
+    onBeforeMount(() => store.dispatch('getCity', (citys) => {
+      state.citys = citys
+    }))
 
     return toRefs(state)
   }

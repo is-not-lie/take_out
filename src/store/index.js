@@ -7,7 +7,9 @@ const user = new Storage('user')
 export default createStore({
   state: {
     user: user.value,
-    citys: []
+    citys: [],
+    orderList: [],
+    comments: {}
   },
   mutations,
   actions,

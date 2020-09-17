@@ -1,5 +1,5 @@
 <template>
-  <i v-for="(star, i) in starClass" :key="i" :class="star"></i>
+  <i v-for="(star, i) in starClass" :key="i" :class="[size ? size : 'min', star]"></i>
 </template>
 
 <script>
@@ -7,7 +7,8 @@ import { computed, ref } from 'vue'
 export default {
   name: 'Star',
   props: {
-    score: Number
+    score: Number,
+    size: String
   },
   setup (props) {
     const starClass = computed(() => {
@@ -32,11 +33,17 @@ export default {
 <style lang="scss" scoped>
 i{
   display: inline-block;
-  width: rem(10);
-  height: rem(10);
   background-image: url('~@img/star.png');
   background-repeat: no-repeat;
   background-size: cover;
+  &.min{
+    width: rem(10);
+    height: rem(10);
+  }
+  &.max{
+    width: rem(15);
+    height: rem(15);
+  }
   &.half{
     background-position: 0 50%;
   }

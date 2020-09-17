@@ -1,31 +1,71 @@
 <template>
-  <section class="shop-info">
-    <header>
+  <section class="shop-info" v-if="shopInfo">
+    <header v-if="shopInfo.shopInfo">
       <div class="goback">
         <i class="iconfont icon-left"></i>
       </div>
       <div class="merchant">
-        <img src="" alt="">
-        <div class="merchant-info"></div>
+        <img :src="shopInfo.shopInfo.shopPic" :alt="shopInfo.shopInfo.shopName">
+        <div class="merchant-info">
+          <p class="journey">
+            <span class="distance" v-html="`${shopInfo.shopInfo.deliveryTimeDecoded}分钟`"></span>
+            <span class="time" v-html="shopInfo.shopInfo.distance"></span>
+          </p>
+          <p class="affiche">公告:{{shopInfo.shopInfo.bulletin}}</p>
+        </div>
       </div>
     </header>
-    <section></section>
-    <footer>
+    <img src="@img/msite_back.svg" v-else/>
+    <section v-if="shopInfo.categoryList">
+      <ul class="menu">
+        <li :class="{active: showModel === 0}" @touchstart="showModel = 0"><span>点菜</span></li>
+        <li :class="{active: showModel === 1}" @touchstart="showModel = 1"><span>评价</span></li>
+        <li :class="{active: showModel === 2}" @touchstart="showModel = 2"><span>商家</span></li>
+      </ul>
+      <Goods :list="shopInfo.categoryList" v-if="showModel === 0"/>
+      <Comments v-if="showModel === 1"/>
+      <Shop v-if="showModel === 2"/>
+    </section>
+    <img src="@img/shop_back.svg" v-else/>
+    <footer v-if="shopInfo.shopInfo">
       <div class="cart">
         <i class="iconfont icon-cart"></i>
       </div>
-      <span>另需配送费{{'$9.9'}}</span>
-      <span>{{'$19'}}起送</span>
+      <span>另需配送费¥{{shopInfo.shopInfo.deliveryFee}}</span>
+      <span class="minFee">¥{{shopInfo.shopInfo.minFee}}起送</span>
       <router-link to="" v-show="false">去结算</router-link>
     </footer>
+  </section>
+  <section v-else>
+    <img src="@img/error.png"/>
+    <h3>暂无该商家信息...</h3>
   </section>
 </template>
 
 <script>
+import { onBeforeMount, reactive, toRefs } from 'vue'
+import { Goods, Shop, Comments } from '@com/ShopInfo'
 export default {
   name: 'shopinfo',
+  components: { Goods, Shop, Comments },
   setup () {
-    return {}
+    const state = reactive({
+      shopInfo: {},
+      showModel: 0
+    })
+
+    onBeforeMount(() => {
+      const xhr = new XMLHttpRequest()
+      xhr.open('get', 'http://localhost:4000/shops/info')
+      xhr.send()
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState !== 4) return
+        if (xhr.status >= 200 && xhr.status < 300) {
+          state.shopInfo = JSON.parse(xhr.response)
+        }
+      }
+    })
+    return toRefs(state)
   }
 }
 </script>
@@ -48,7 +88,56 @@ export default {
     }
     .merchant{
       height: rem(80);
-      @extend .flex;
+      padding-left: rem(10);
+      color: #fff;
+      img{
+        float: left;
+        width: rem(85);
+        height: rem(64);
+        margin-top: rem(5);
+        margin-right: rem(10);
+        box-shadow: 0 2px 15px 0 rgba(0, 0, 0, 0.15);
+        border-radius: 2px;
+      }
+      .merchant-info{
+        padding-top: rem(20);
+        font-size: $min-size;
+        .affiche{
+          @extend .nowrap;
+          padding-top: rem(10);
+        }
+      }
+    }
+  }
+  section{
+    position: sticky;
+    top: rem(80);
+    left: 0;
+    .menu{
+      display: flex;
+      padding-top: rem(20);
+      li{
+        flex: 1;
+        height: rem(40);
+        position: relative;
+        text-align: center;
+        line-height: rem(40);
+        color: $color2;
+        font-size: $base-size;
+        &.active{
+          color: $color;
+          &::after{
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: rem(20);
+            height: rem(2);
+            background-color: $theme;
+          }
+        }
+      }
     }
   }
   footer{
@@ -59,6 +148,7 @@ export default {
     height: rem(50);
     background-color: $bg-color5;
     padding-left: rem(70);
+    color: $color2;
     @extend .flex;
     justify-content: space-between;
     .cart{
@@ -75,6 +165,11 @@ export default {
         font-size: $max-size;
         color: $color4;
       }
+    }
+    .minFee{
+      padding: 0 rem(18);
+      font-size: $base-size;
+      font-weight: 600;
     }
   }
 }
