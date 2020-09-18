@@ -1,4 +1,12 @@
-import { COMMIT_LOGINOUT, COMMIT_LOGIN, COMMIT_CITY, COMMIT_ORDER, COMMIT_COMMENTS } from './type'
+import {
+  COMMIT_LOGINOUT,
+  COMMIT_LOGIN,
+  COMMIT_CITY,
+  COMMIT_ORDER,
+  COMMIT_COMMENTS,
+  COMMIT_SHOPSLIST,
+  COMMIT_CATELIST
+} from './type'
 export default {
   // 退出登录
   [COMMIT_LOGINOUT] (state) {
@@ -19,5 +27,13 @@ export default {
   // 提交商家评论信息
   [COMMIT_COMMENTS] (state, comments) {
     state.comments = comments
+  },
+  // 提交首页商家列表数据
+  [COMMIT_SHOPSLIST] (state, shopsList) {
+    state.shopsList = shopsList
+  },
+  // 提交分类列表数据
+  [COMMIT_CATELIST] (state, categorys) {
+    state.categorys = categorys
   }
 }

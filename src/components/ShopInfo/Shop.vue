@@ -1,7 +1,8 @@
 <template>
-  <div>
+  <section v-if="false">
 
-  </div>
+  </section>
+  <Loding v-else/>
 </template>
 
 <script>

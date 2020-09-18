@@ -31,10 +31,8 @@
 </template>
 
 <script>
-import Seach from '@com/common/Seach'
 export default {
   name: 'seach',
-  components: { Seach },
   setup () {
     const hotSeach = ['华莱士', '麻辣烫', '炒饭', '奶茶', '烧烤', '肠粉', '炸鸡', '汉堡', '饺子', '咖啡', '粥']
     const historySeach = ['尊宝宝马来榴莲披萨（古巷店）', '华莱士']

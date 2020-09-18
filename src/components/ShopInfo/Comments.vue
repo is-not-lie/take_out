@@ -22,10 +22,35 @@
         <span>配送评分</span>
       </div>
     </header>
-    <section class="content">
-      <ul>
+    <section class="comments-container">
+      <ul class="top-label">
         <li :class="{active: i === 0}" v-for="(label, i) in comments.commentLabels" :key="label.ID">
           {{label.content}}
+        </li>
+      </ul>
+      <ul class="comments-content">
+        <li v-for="item in comments.list" :key="item.userID">
+          <img class="user-pic" :src="item.userPicUrl || require('@img/user_pic.png')" alt="userPic" />
+          <div class="comment-content">
+            <p class="user">
+              <span class="user-name">{{item.userName}}</span>
+              <span class="comment-time">{{item.commentTime}}</span>
+            </p>
+            <p class="delivery-time">{{item.deliveryTime}}</p>
+            <p class="content">{{item.content}}</p>
+            <div class="imgs" v-if="item.pictures">
+              <img v-for="(img, i) in item.pictures" :key="i" :src="img.smallPicUrl" />
+            </div>
+            <p class="praise-dish" v-if="item.praiseDish">
+              <i class="iconfont icon-good"></i>
+              {{item.praiseDish}}
+            </p>
+            <p class="label" v-if="item.label">
+              <i class="iconfont icon-label"></i>
+              {{item.label}}
+            </p>
+            <p class="shop-reply" v-if="item.shopReply">{{item.shopReply}}</p>
+          </div>
         </li>
       </ul>
     </section>
@@ -112,9 +137,9 @@ section{
       }
     }
   }
-  .content{
+  .comments-container{
     background-color: $bg-color2;
-    ul{
+    .top-label{
       padding: rem(15) rem(14) rem(5);
       display: flex;
       flex-wrap: wrap;
@@ -143,6 +168,74 @@ section{
           color: $theme;
           &::before{
             border-color: $theme;
+          }
+        }
+      }
+    }
+    .comments-content{
+      padding: 0 rem(15);
+      background-color: $bg-color2;
+      margin-bottom: rem(50);
+      li{
+        display: flex;
+        padding: rem(15) 0 rem(10);
+        font-size: $min-size;
+        .user-pic{
+          width: rem(40);
+          height: rem(40);
+          border-radius: rem(40);
+          margin-right: rem(12);
+        }
+        .comment-content{
+          flex: 1;
+          .user{
+            @extend .flex;
+            justify-content: space-between;
+            .user-name{
+              font-size: $base-size;
+              color: #2f2f2f;
+            }
+            .comment-time{
+              color: $color2;
+            }
+          }
+          .delivery-time{
+            margin-top: rem(7);
+            color: $color;
+          }
+          .content{
+            line-height: rem(20);
+            padding: rem(14) 0 rem(8);
+            font-size: rem(14);
+          }
+          .imgs{
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: rem(5);
+            img{
+              width: rem(80);
+              height: rem(80);
+              margin-right: rem(5);
+            }
+          }
+          .praise-dish,
+          .label{
+            color: $color2;
+            vertical-align: middle;
+            line-height: rem(20);
+            i{
+              margin-right: rem(2);
+              font-size: $min-size;
+            }
+          }
+          .praise-dish{
+            margin: rem(4) 0;
+          }
+          .shop-reply{
+            margin: rem(10) 0;
+            padding: rem(5) rem(8);
+            line-height: rem(18);
+            background-color: $bg-color6;
           }
         }
       }

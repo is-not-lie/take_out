@@ -21,5 +21,7 @@ export const http = {
   // 请求商家详情信息数据
   reqShopInfo: () => axios.get('/shops/info'),
   // 请求商家评论数据
-  reqShopComments: (shopId) => axios.get('/shops/comments', { params: { shopId } })
+  reqShopComments: (shopId) => axios.get('/shops/comments', { params: { shopId } }),
+  // 请求分类列表数据
+  reqCategorys: () => axios.get('/category/list')
 }

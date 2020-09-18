@@ -9,7 +9,9 @@ export default createStore({
     user: user.value,
     citys: [],
     orderList: [],
-    comments: {}
+    comments: {},
+    shopsList: [],
+    categorys: {}
   },
   mutations,
   actions,

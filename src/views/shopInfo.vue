@@ -1,7 +1,7 @@
 <template>
   <section class="shop-info" v-if="shopInfo">
     <header v-if="shopInfo.shopInfo">
-      <div class="goback">
+      <div class="goback" @click="push('/')">
         <i class="iconfont icon-left"></i>
       </div>
       <div class="merchant">
@@ -44,11 +44,13 @@
 
 <script>
 import { onBeforeMount, reactive, toRefs } from 'vue'
+import { useRouter } from 'vue-router'
 import { Goods, Shop, Comments } from '@com/ShopInfo'
 export default {
   name: 'shopinfo',
   components: { Goods, Shop, Comments },
   setup () {
+    const { push } = useRouter()
     const state = reactive({
       shopInfo: {},
       showModel: 0
@@ -65,7 +67,7 @@ export default {
         }
       }
     })
-    return toRefs(state)
+    return { push, ...toRefs(state) }
   }
 }
 </script>
