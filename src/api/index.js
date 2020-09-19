@@ -3,7 +3,7 @@ import { PAGE_SIZE } from '@config'
 
 export const http = {
   // 请求首页分类导航数据
-  reqCategory: () => axios.get('/category'),
+  reqCategoryMenu: () => axios.get('/category'),
   // 请求首页商家列表数据
   reqShopsList: (pageNum) => axios.get('/shops/list', { params: { pageNum, pageSize: PAGE_SIZE } }),
   // 请求svg验证码

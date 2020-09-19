@@ -22,7 +22,7 @@
         </p>
         <ul>
           <li>
-            <p class="site">宫前市场 宫后巷一栋</p>
+            <p class="site">testtesttest</p>
             <p class="user">
               <span>test</span>
               <span>123456789</span>
@@ -48,6 +48,15 @@
 </template>
 
 <script>
+/*
+  位置显示页面
+  需求:
+    1. 页面加载完毕显示用户当前定位,附近商家地址,用户收货地址
+    2. 点击重新定位时重新定位并更新用户位置
+    3. 点击选择城市时跳转city页面(已完成)
+    4. 点击搜索框时隐藏用户当前定位,附近商家地址,用户收货地址, 点击取消时显示
+    5. 搜索框输入时实时请求数据并展示
+*/
 import { reactive, toRefs } from 'vue'
 import { useStore } from 'vuex'
 export default {

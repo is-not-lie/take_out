@@ -9,3 +9,11 @@ export const getCategorys = async ({ commit }, callback) => {
     isFun(callback) && callback(categorys)
   }
 }
+
+export const getCategoryMenu = async ({ commit }, callback) => {
+  const categoryMenu = await http.reqCategoryMenu()
+  if (categoryMenu) {
+    commit('COMMIT', { key: 'categoryMenu', val: categoryMenu })
+    isFun(callback) && callback(categoryMenu)
+  }
+}

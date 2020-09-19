@@ -2,10 +2,12 @@ import { http } from '@api'
 import { isFun } from '@utils/types'
 
 // 获取首页商家列表
-export const getShopsList = async ({ commit }, data) => {
+export const getShopsList = async ({ commit, state }, data) => {
   const { pageNum, callback } = data
+  const { list } = state.shopsList
   const shopsList = await http.reqShopsList(pageNum)
   if (shopsList) {
+    shopsList.list = list ? [...list, ...shopsList.list] : [...shopsList.list]
     commit('COMMIT', { key: 'shopsList', val: shopsList })
     isFun(callback) && callback(shopsList)
   }

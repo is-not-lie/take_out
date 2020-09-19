@@ -21,6 +21,12 @@
 </template>
 
 <script>
+/*
+  个人中心页面
+  需求:
+    1. 点击退出登录时提醒用户,确认则退出并清理保持的数据(退出功能做了,提醒功能还没)
+    2. 点击收获地址时跳转到用户地址页面(该页面还没写)
+*/
 import { reactive, toRefs } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
@@ -88,7 +94,7 @@ export default {
         color: $color2;
       }
       &:not(:nth-last-child(1)){
-        border-bottom: 1px solid $border-color;
+        border-bottom: rem(1) solid $border-color;
       }
     }
   }

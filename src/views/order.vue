@@ -35,6 +35,12 @@
 </template>
 
 <script>
+/*
+  用户订单页面
+  需求:
+    1. 点击删除时删除该订单
+    2. 点击再来一单时跳转对应商家页面并勾选对应商品,若对应商品已停售则提醒用户
+*/
 import { reactive, toRefs, onBeforeMount } from 'vue'
 import { useStore } from 'vuex'
 export default {
@@ -48,7 +54,9 @@ export default {
 
     onBeforeMount(() => {
       const { user } = state
-      if (user) store.dispatch('getOrder', { userId: user._id, callback (list) { state.orderList = list } })
+      if (user._id && !state.orderList.length) {
+        store.dispatch('getOrder', { userId: user._id, callback (list) { state.orderList = list } })
+      }
     })
 
     return toRefs(state)
@@ -119,10 +127,10 @@ export default {
       }
       .again{
         background-color: $theme;
-        border: 1px solid $theme;
+        border: rem(1) solid $theme;
       }
       .del{
-        border: 1px solid $border-color;
+        border: rem(1) solid $border-color;
       }
     }
   }

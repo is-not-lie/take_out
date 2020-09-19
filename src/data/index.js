@@ -5,7 +5,7 @@ export const footerBar = [
   { name: '我的', icon: 'icon-my', path: 'profile' }
 ]
 
-export const homeMenu = [
+export const sortMenu = [
   { name: '综合排序', icon: 'icon-bottom' },
   { name: '销量最高' },
   { name: '距离最近' },

@@ -30,6 +30,12 @@
 </template>
 
 <script>
+/*
+  用户注册页面
+  需求:
+    1. 输入验证....
+    2. 验证码(已完成,虽然把验证码给前端不安全,但是也不是正式项目就算了)
+*/
 import { reactive, toRefs, computed } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
@@ -111,7 +117,7 @@ export default {
       height: rem(50);
       border-radius: rem(50);
       margin-bottom: rem(10);
-      border: rem(4) solid rgba($color: #fff, $alpha: .2);
+      border: rem(4) solid rgba($color: $bg-color2, $alpha: .2);
     }
     span{
       font-size: $base-size;
@@ -144,7 +150,7 @@ export default {
       input{
         flex: 1;
         padding-left: rem(10);
-        border-bottom: 1px solid $theme;
+        border-bottom: rem(1) solid $theme;
       }
       &.submit{
         margin-top: rem(30);

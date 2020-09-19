@@ -44,6 +44,10 @@
 </template>
 
 <script>
+/*
+  用户登录页面
+  需求: 功能基本写完了, 就剩下输入验证和优化
+*/
 import { reactive, toRefs, computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
@@ -105,13 +109,20 @@ export default {
       }
     }
     // 获取svg验证码
-    const getCaptcha = async () => {
-      const svg = await http.reqCaptcha()
-      if (svg) {
-        state.captcha = svg.text.toLowerCase()
-        state.svg = svg.data
+    const getCaptcha = (() => {
+      let timeKey = null
+      return () => {
+        if (timeKey) clearTimeout(timeKey)
+        timeKey = setTimeout(async () => {
+          const svg = await http.reqCaptcha()
+          if (svg) {
+            state.captcha = svg.text.toLowerCase()
+            state.svg = svg.data
+          }
+          timeKey = null
+        }, 300)
       }
-    }
+    })()
     // 发送短信验证码
     const getCode = async () => {
       const { isDisabled, phone } = state.phoneLogin
@@ -177,11 +188,11 @@ export default {
         color: $color2;
         font-size: $base-size;
         border-radius: rem(5);
-        box-shadow: -3px -3px 4px rgba(250, 250, 250, 1),
-          3px 3px 4px rgba(0, 0, 0, 0.2);
+        box-shadow: rem(-3) rem(-3) rem(4) $bg-color2,
+          rem(3) rem(3) rem(4) $shadow-color;
         &.on{
-          box-shadow: inset -3px -3px 4px rgba(250, 250, 250, 1),
-            inset 3px 3px 4px rgba(0, 0, 0, 0.2);
+          box-shadow: inset rem(-3) rem(-3) rem(4) $bg-color2,
+            inset rem(3) rem(3) rem(4) $shadow-color;
           color: $theme;
         }
       }
@@ -214,7 +225,7 @@ export default {
             border: none;
             height: rem(40);
             padding-left: rem(10);
-            border-bottom: 1px solid $theme;
+            border-bottom: rem(1) solid $theme;
             &::placeholder{
               color: $color2;
             }
@@ -227,7 +238,7 @@ export default {
         button{
           width: 50%;
           height: rem(30);
-          border: 1px solid $theme;
+          border: rem(1) solid $theme;
           background-color: $theme;
           color: $color;
           font-size: $base-size;
@@ -237,7 +248,7 @@ export default {
         a{
           margin-top: rem(20);
           padding: 0 rem(30) rem(10);
-          border-bottom: 1px solid $theme;
+          border-bottom: rem(1) solid $theme;
         }
       }
     }

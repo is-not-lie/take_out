@@ -121,7 +121,7 @@ export default {
           margin-bottom: rem(10);
         }
         .cur-pri {
-          font-size: rem(18);
+          font-size: $sm-size;
           color: $color5;
           line-height: rem(22);
         }
@@ -142,7 +142,7 @@ export default {
             line-height: rem(20);
             color: $color5;
             padding: 0 rem(5);
-            font-size: rem(10);
+            font-size: $min-size;
             margin-right: rem(3);
             &::before {
               content: '';
@@ -151,7 +151,7 @@ export default {
               bottom: -50%;
               left: -50%;
               right: -50%;
-              border: 1px solid $color5;
+              border: rem(1) solid $color5;
               transform: scale(0.5);
             }
           }

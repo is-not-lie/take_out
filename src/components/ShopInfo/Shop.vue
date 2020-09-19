@@ -72,6 +72,7 @@
   商家详情组件
   需求:
     1. 点击电话图标拨打商家电话
+    2. 点击公告显示隐藏的模态框(模态框还没写)
 */
 import { reactive, toRefs, onBeforeMount } from 'vue'
 import { useStore } from 'vuex'
@@ -121,7 +122,7 @@ export default {
         border: none;
         i{
           color: $color;
-          font-size: rem(20);
+          font-size: $ms-size;
           margin: 0;
         }
       }

@@ -6,18 +6,17 @@ const user = new Storage('user')
 export default createStore({
   state: {
     user: user.value,
+    categoryMenu: [],
     citys: [],
     orderList: [],
     shopGoods: {},
     comments: {},
     shopInfo: {},
-    shopsList: [],
+    shopsList: {},
     categorys: {},
     seachLabels: {}
   },
-  mutations: {
-    COMMIT (state, { key, val }) { state[key] = val }
-  },
+  mutations: { COMMIT (state, { key, val }) { state[key] = val } },
   actions,
   modules: {
   }

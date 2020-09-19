@@ -43,6 +43,14 @@
 </template>
 
 <script>
+/*
+  商家页面
+  需求:
+    1. 点击公告下方的活动条显示隐藏的模态框(组件都还没写)
+    2. 点击评论label显示对应的评论(在 Comments 组件里写)
+    3. 商品展示, 加入购物车功能(在 Goods 组件里写,底部购物车的功能在这里写,也可以转移过去)
+    4. 商家详情功能(在 Shop 组件里写)
+*/
 import { onBeforeMount, reactive, toRefs } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter, useRoute } from 'vue-router'

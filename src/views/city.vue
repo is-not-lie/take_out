@@ -1,7 +1,7 @@
 <template>
   <section>
     <nav>
-      <span>#</span>
+      <a href="#">#</a>
       <a v-for="(ify,i) in citys.classify_nav" :key="i" :href="`#${ify.idx}`">{{ify.idx}}</a>
     </nav>
     <header>
@@ -43,6 +43,14 @@
 </template>
 
 <script>
+/*
+  城市页面
+  需求:
+    1. 点击取消时返回定位页面
+    2. 点击对应城市时返回定位页面并展示对应城市
+    3. 输入框的实时搜索显示
+    4. 点击右侧导航移动到对应位置(完成)
+*/
 import { reactive, toRefs, onBeforeMount } from 'vue'
 import { useStore } from 'vuex'
 export default {

@@ -2,7 +2,7 @@
   <section class="seach">
     <header>
       <h3>
-        <i class="iconfont icon-left"></i>
+        <i class="iconfont icon-left" @touchstart.prevent="back()"></i>
         搜索页
       </h3>
       <div>
@@ -31,12 +31,22 @@
 </template>
 
 <script>
+/*
+  搜索页面
+  需求:
+    1. 点击label显示对应商家列表
+    2. 点击搜索显示对应关键字商家列表
+    3. 页面加载完毕显示热门搜索label和用户历史搜索(有用户的话)
+    4. 点击用户历史搜索右边的垃圾桶时提醒用户是否清空历史搜索,确认则清除
+*/
 import { reactive, toRefs, onBeforeMount } from 'vue'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 export default {
   name: 'seach',
   setup () {
     const store = useStore()
+    const { back } = useRouter()
     const state = reactive({
       hotLabels: store.state.seachLabels?.hot
     })
@@ -44,7 +54,7 @@ export default {
 
     onBeforeMount(() => store.dispatch('getSeachLabels', (seachLabels) => { state.hotLabels = seachLabels?.hot }))
 
-    return { ...toRefs(state), historySeach }
+    return { ...toRefs(state), historySeach, back }
   }
 }
 </script>
