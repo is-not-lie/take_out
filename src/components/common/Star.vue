@@ -3,6 +3,7 @@
 </template>
 
 <script>
+// 星星图片组件,已完成
 import { computed, ref } from 'vue'
 export default {
   name: 'Star',

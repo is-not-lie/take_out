@@ -16,6 +16,13 @@
 </template>
 
 <script>
+/*
+  筛选选项组件
+  需求:
+    1. 点击清除筛选时清空用户的选择
+    2. 点击确定时根据用户的选择对商品进行筛选并显示(没有符合条件的则显示没有)
+    ----  有个问题, input框绑定啥?  ----
+*/
 import { reactive, toRefs } from 'vue'
 import Item from './Item'
 export default {

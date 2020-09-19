@@ -41,6 +41,13 @@
     left: 0;
   }
 }
+.border-right{
+  position: relative;
+  &::before{
+    @extend .border-x;
+    right: 0;
+  }
+}
 .border-bottom{
   position: relative;
   &::after{
@@ -174,4 +181,18 @@
   color: #348BED;
   border: rem(1) solid #348BED;
   &::before{ content: '票'; margin-left: -1px; }
+}
+// 付字图标
+.pay{
+  @extend .common;
+  color: #348BED;
+  border: rem(1) solid #348BED;
+  &::before{ content: '付'; margin-left: -1px; }
+}
+// 牌字图标
+.brand{
+  @extend .common;
+  color: #348BED;
+  border: rem(1) solid #348BED;
+  &::before{ content: '牌'; margin-left: -1px; }
 }

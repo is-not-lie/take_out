@@ -1,38 +1,38 @@
 <template>
-  <section class="shop-info" v-if="shopInfo">
-    <header v-if="shopInfo.shopInfo">
+  <section class="shop-info" v-if="shopGoods">
+    <header v-if="shopGoods.shopInfo">
       <div class="goback" @click="push('/')">
         <i class="iconfont icon-left"></i>
       </div>
       <div class="merchant">
-        <img :src="shopInfo.shopInfo.shopPic" :alt="shopInfo.shopInfo.shopName">
+        <img :src="shopGoods.shopInfo.shopPic" :alt="shopGoods.shopInfo.shopName">
         <div class="merchant-info">
           <p class="journey">
-            <span class="distance" v-html="`${shopInfo.shopInfo.deliveryTimeDecoded}分钟`"></span>
-            <span class="time" v-html="shopInfo.shopInfo.distance"></span>
+            <span class="distance" v-html="`${shopGoods.shopInfo.deliveryTimeDecoded}分钟`"></span>
+            <span class="time" v-html="shopGoods.shopInfo.distance"></span>
           </p>
-          <p class="affiche">公告:{{shopInfo.shopInfo.bulletin}}</p>
+          <p class="affiche">公告:{{shopGoods.shopInfo.bulletin}}</p>
         </div>
       </div>
     </header>
     <img src="@img/msite_back.svg" v-else/>
-    <section v-if="shopInfo.categoryList">
+    <section v-if="shopGoods.categoryList">
       <ul class="menu">
         <li :class="{active: showModel === 0}" @touchstart="showModel = 0"><span>点菜</span></li>
         <li :class="{active: showModel === 1}" @touchstart="showModel = 1"><span>评价</span></li>
         <li :class="{active: showModel === 2}" @touchstart="showModel = 2"><span>商家</span></li>
       </ul>
-      <Goods :list="shopInfo.categoryList" v-if="showModel === 0"/>
+      <Goods :list="shopGoods.categoryList" v-if="showModel === 0"/>
       <Comments v-if="showModel === 1"/>
       <Shop v-if="showModel === 2"/>
     </section>
     <img src="@img/shop_back.svg" v-else/>
-    <footer v-if="shopInfo.shopInfo">
+    <footer v-if="shopGoods.shopInfo">
       <div class="cart">
         <i class="iconfont icon-cart"></i>
       </div>
-      <span>另需配送费¥{{shopInfo.shopInfo.deliveryFee}}</span>
-      <span class="minFee">¥{{shopInfo.shopInfo.minFee}}起送</span>
+      <span>另需配送费¥{{shopGoods.shopInfo.deliveryFee}}</span>
+      <span class="minFee">¥{{shopGoods.shopInfo.minFee}}起送</span>
       <router-link to="" v-show="false">去结算</router-link>
     </footer>
   </section>
@@ -44,27 +44,27 @@
 
 <script>
 import { onBeforeMount, reactive, toRefs } from 'vue'
-import { useRouter } from 'vue-router'
-import { Goods, Shop, Comments } from '@com/ShopInfo'
+import { useStore } from 'vuex'
+import { useRouter, useRoute } from 'vue-router'
+import { Goods, Shop, Comments } from '@com/shopInfo'
 export default {
   name: 'shopinfo',
   components: { Goods, Shop, Comments },
   setup () {
+    const store = useStore()
+    const { params } = useRoute()
     const { push } = useRouter()
     const state = reactive({
-      shopInfo: {},
+      shopGoods: store.state.shopGoods,
       showModel: 0
     })
 
     onBeforeMount(() => {
-      const xhr = new XMLHttpRequest()
-      xhr.open('get', 'http://localhost:4000/shops/info')
-      xhr.send()
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState !== 4) return
-        if (xhr.status >= 200 && xhr.status < 300) {
-          state.shopInfo = JSON.parse(xhr.response)
-        }
+      if (store.state.shopGoods) {
+        store.dispatch('getShopGoods', {
+          shopId: params.id,
+          callback (shopGoods) { state.shopGoods = shopGoods }
+        })
       }
     })
     return { push, ...toRefs(state) }
@@ -98,8 +98,8 @@ export default {
         height: rem(64);
         margin-top: rem(5);
         margin-right: rem(10);
-        box-shadow: 0 2px 15px 0 rgba(0, 0, 0, 0.15);
-        border-radius: 2px;
+        box-shadow: 0 rem(2) rem(15) 0 rgba(0, 0, 0, 0.15);
+        border-radius: rem(2);
       }
       .merchant-info{
         padding-top: rem(20);

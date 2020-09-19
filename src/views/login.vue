@@ -80,7 +80,11 @@ export default {
         } else if (isDisabled) {
           console.log('手机号格式错误')
         } else {
-          dispatch('login', { params: { phone }, callback: () => replace('/') })
+          dispatch('login', {
+            params: { phone },
+            type: 'login',
+            callback: () => replace('/')
+          })
         }
       } else {
         const { username, password, captcha } = state.pwdLogin
@@ -92,7 +96,11 @@ export default {
         } else if (password.trim() === '' || password.length < 6) {
           console.log('密码格式错误')
         } else {
-          dispatch('login', { params: { username, password }, callback: () => replace('/') })
+          dispatch('login', {
+            params: { username, password },
+            type: 'login',
+            callback: () => replace('/')
+          })
         }
       }
     }

@@ -12,6 +12,7 @@
 </template>
 
 <script>
+// 底部导航条组件,已完成
 import { useRouter } from 'vue-router'
 import { footerBar } from '@data'
 export default {

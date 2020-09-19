@@ -10,6 +10,12 @@
 </template>
 
 <script>
+/*
+  首页的分类图片墙组件
+  需求:
+    1. 根据时间变换午餐优选/夜宵/下午茶这个图
+    2. 点击跳转分类页,并根据分类id请求对应商品信息
+*/
 import { onBeforeMount, reactive, toRefs } from 'vue'
 import { http } from '@api'
 import { BASE_URL } from '@config'

@@ -1,6 +1,6 @@
 <template>
-  <router-view/>
-  <FooterBar v-show="$route.meta.showFooter"/>
+  <router-view />
+  <FooterBar v-show="$route.meta.showFooter" />
 </template>
 
 <style lang="scss">

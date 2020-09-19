@@ -1,8 +1,0 @@
-export const COMMIT_LOGIN = 'commitUserLogin'
-export const COMMIT_SIGNIN = 'commitUserSignIn'
-export const COMMIT_LOGINOUT = 'commitUserLoginOut'
-export const COMMIT_CITY = 'commitCity'
-export const COMMIT_ORDER = 'commitOrder'
-export const COMMIT_COMMENTS = 'commitShopComments'
-export const COMMIT_SHOPSLIST = 'commitShopsList'
-export const COMMIT_CATELIST = 'commitCategoryList'

@@ -12,6 +12,11 @@
 </template>
 
 <script>
+/*
+  需求:
+    1. 下拉加载更多商家
+    2. 导航点击排序功能
+*/
 import { onBeforeMount, reactive, toRefs } from 'vue'
 import { useStore } from 'vuex'
 import { homeMenu } from '@data'

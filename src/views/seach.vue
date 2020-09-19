@@ -13,8 +13,8 @@
       <div class="hot-seach">
         <p>热门搜索</p>
         <ul>
-          <li v-for="(hot,i) in hotSeach" :key="i">
-            <router-link to="">{{hot}}</router-link>
+          <li v-for="(hot,i) in hotLabels" :key="i">
+            <router-link to="">{{hot.labelName}}</router-link>
           </li>
         </ul>
       </div>
@@ -31,12 +31,20 @@
 </template>
 
 <script>
+import { reactive, toRefs, onBeforeMount } from 'vue'
+import { useStore } from 'vuex'
 export default {
   name: 'seach',
   setup () {
-    const hotSeach = ['华莱士', '麻辣烫', '炒饭', '奶茶', '烧烤', '肠粉', '炸鸡', '汉堡', '饺子', '咖啡', '粥']
+    const store = useStore()
+    const state = reactive({
+      hotLabels: store.state.seachLabels?.hot
+    })
     const historySeach = ['尊宝宝马来榴莲披萨（古巷店）', '华莱士']
-    return { hotSeach, historySeach }
+
+    onBeforeMount(() => store.dispatch('getSeachLabels', (seachLabels) => { state.hotLabels = seachLabels?.hot }))
+
+    return { ...toRefs(state), historySeach }
   }
 }
 </script>

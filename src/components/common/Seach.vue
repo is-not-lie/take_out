@@ -9,6 +9,10 @@
 </template>
 
 <script>
+/*
+  搜索框组件
+  需求: 输入关键字实时搜索商品
+*/
 export default {
   name: 'Seach',
   props: {

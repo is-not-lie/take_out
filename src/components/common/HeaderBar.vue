@@ -7,6 +7,13 @@
 </template>
 
 <script>
+/*
+  顶部条组件
+  需求:
+    1. 加载后请求用户定位并显示
+    2. 当滚动条位置位于商品列表时隐藏定位,显示搜索组件
+    3. 点击跳转定位页面 || 搜索页面
+*/
 import { useRouter } from 'vue-router'
 export default {
   name: 'HeaderBar',

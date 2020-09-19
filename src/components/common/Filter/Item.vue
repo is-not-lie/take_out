@@ -18,6 +18,9 @@
 </template>
 
 <script>
+/*
+  筛选组件的选项卡, input框有问题...
+*/
 import { reactive, toRefs, computed } from 'vue'
 import { BASE_URL } from '@config'
 export default {

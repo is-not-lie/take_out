@@ -9,6 +9,10 @@
 </template>
 
 <script>
+/*
+  排序选项组件
+  需求: 点击对应选项对商品进行相应的排序
+*/
 export default {
   name: 'Sort',
   props: {

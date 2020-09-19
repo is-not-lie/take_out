@@ -8,6 +8,10 @@
 </template>
 
 <script>
+/*
+  排序选项导航组件
+  需求: 点击时将位置置于顶部,并按点击的响应功能对商品进行排序(父组件里面做)
+*/
 import { ref } from 'vue'
 export default {
   name: 'Menu',

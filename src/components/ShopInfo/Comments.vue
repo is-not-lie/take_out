@@ -59,6 +59,10 @@
 </template>
 
 <script>
+/*
+  商家评论组件
+  需求: 下拉加载更多商家评论信息
+*/
 import { reactive, toRefs, onBeforeMount } from 'vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
@@ -74,10 +78,7 @@ export default {
       const { id } = route.params
       store.dispatch('getShopComments', {
         shopId: id,
-        callback (comments) {
-          state.comments = comments
-          console.log(comments)
-        }
+        callback (comments) { state.comments = comments }
       })
     })
 
@@ -206,7 +207,7 @@ section{
           .content{
             line-height: rem(20);
             padding: rem(14) 0 rem(8);
-            font-size: rem(14);
+            font-size: $default-size;
           }
           .imgs{
             display: flex;

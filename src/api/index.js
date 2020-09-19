@@ -18,10 +18,14 @@ export const http = {
   reqCity: () => axios.get('/city'),
   // 请求用户订单数据
   reqOrder: (userId) => axios.post('/order', { userId }),
-  // 请求商家详情信息数据
-  reqShopInfo: () => axios.get('/shops/info'),
+  // 请求商家商品列表信息数据
+  reqShopGoods: (shopId) => axios.get('/shops/goods', { params: { shopId } }),
   // 请求商家评论数据
   reqShopComments: (shopId) => axios.get('/shops/comments', { params: { shopId } }),
+  // 请求商家详情信息数据
+  reqShopInfo: (shopId) => axios.get('/shops/info', { params: { shopId } }),
   // 请求分类列表数据
-  reqCategorys: () => axios.get('/category/list')
+  reqCategorys: () => axios.get('/category/list'),
+  // 请求热门搜索label
+  reqSeachLabels: () => axios.get('/seach/hot')
 }

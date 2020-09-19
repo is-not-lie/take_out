@@ -38,6 +38,17 @@
 </template>
 
 <script>
+/*
+  商家商品列表组件
+  需求:
+    1. 顶部显示当前所在商品对应的分类
+    2. 实时更新分类导航样式
+    3. 点击对应分类导航移动到对应商品位置
+    4. 点击商品图片显示大图片模态框
+    5. 点击 + 按钮则商品数量 +1 并显示 - 按钮与商品数量, 点击 - 按钮则反过来..数量为 0 时隐藏 - 按钮
+    6. 底部购物车实时更新商品总价与商品数量
+    7. 当商品总价达到最低起送价时显示"去结算"按钮,并点击该按钮时跳转结算页面
+*/
 export default {
   name: 'Goods',
   props: {
@@ -111,7 +122,7 @@ export default {
         }
         .cur-pri {
           font-size: rem(18);
-          color: #fb4e44;
+          color: $color5;
           line-height: rem(22);
         }
         .unit {
@@ -129,7 +140,7 @@ export default {
             position: relative;
             height: rem(15);
             line-height: rem(20);
-            color: #fb4e44;
+            color: $color5;
             padding: 0 rem(5);
             font-size: rem(10);
             margin-right: rem(3);
@@ -140,7 +151,7 @@ export default {
               bottom: -50%;
               left: -50%;
               right: -50%;
-              border: 1px solid #fb4e44;
+              border: 1px solid $color5;
               transform: scale(0.5);
             }
           }

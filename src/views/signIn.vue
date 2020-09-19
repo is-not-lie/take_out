@@ -78,8 +78,9 @@ export default {
       } else if (!phone || isDisabled) {
         console.log('手机号码格式错误')
       } else {
-        store.dispatch('signIn', {
+        store.dispatch('login', {
           params: { username, password, phone },
+          type: 'signIn',
           callback: () => replace('/')
         })
       }

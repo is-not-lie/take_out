@@ -8,8 +8,10 @@
 </template>
 
 <script>
+import { CategoryMenu, HomeMain } from '@com/home'
 export default {
   name: 'home',
+  components: { CategoryMenu, HomeMain },
   setup () {
     return {}
   }

@@ -7,7 +7,7 @@
         <div class="shop-score">
           <div class="star">
             <Star :score="shop.score" />
-            <span>{{shop.score.toString().split('').join('.')}}</span>
+            <span>{{score}}</span>
             <span v-html="shop.monthSalesTip"></span>
           </div>
           <div class="delivery">
@@ -33,13 +33,15 @@
 </template>
 
 <script>
+import { computed, ref } from 'vue'
 export default {
   name: 'Shop',
   props: {
     shop: Object
   },
-  setup () {
-    return {}
+  setup (props) {
+    const score = ref(computed(() => props.shop.score.toString().split('').join('.')))
+    return { score }
   }
 }
 </script>
