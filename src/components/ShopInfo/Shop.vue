@@ -34,7 +34,7 @@
       </p>
     </section>
     <footer class="discounts">
-      <p class="tip">
+      <p class="tip" @touchstart.prevent="showFooterModal">
         <i class="iconfont icon-notice"></i>
         <span>{{shopInfo.tip}}</span>
         <i class="iconfont icon-right"></i>
@@ -72,18 +72,20 @@
   商家详情组件
   需求:
     1. 点击电话图标拨打商家电话
-    2. 点击公告显示隐藏的模态框(模态框还没写)
 */
 import { reactive, toRefs, onBeforeMount } from 'vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 export default {
-  setup () {
+  setup (props, { emit }) {
     const store = useStore()
     const route = useRoute()
     const state = reactive({
-      shopInfo: store.state.shopInfo
+      shopInfo: store.state.shopInfo,
+      showFooterModal: false
     })
+
+    const showFooterModal = () => emit('showfooter')
 
     onBeforeMount(() => {
       if (store.state.shopInfo) {
@@ -95,7 +97,7 @@ export default {
       }
     })
 
-    return toRefs(state)
+    return { ...toRefs(state), showFooterModal }
   }
 }
 </script>

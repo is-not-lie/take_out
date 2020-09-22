@@ -7,33 +7,42 @@
       <div class="merchant">
         <img :src="shopGoods.shopInfo.shopPic" :alt="shopGoods.shopInfo.shopName">
         <div class="merchant-info">
-          <p class="journey">
-            <span class="distance" v-html="`${shopGoods.shopInfo.deliveryTimeDecoded}分钟`"></span>
-            <span class="time" v-html="shopGoods.shopInfo.distance"></span>
-          </p>
+          <div class="journey">
+            <p>
+              <span class="time" v-html="`${shopGoods.shopInfo.deliveryTimeDecoded}分钟`"></span>
+              <span class="distance" v-html="shopGoods.shopInfo.distance"></span>
+            </p>
+            <img src="@img/logo.png" v-if="shopGoods.shopInfo.deliveryType" />
+          </div>
           <p class="affiche">公告:{{shopGoods.shopInfo.bulletin}}</p>
+        </div>
+        <div class="activitys" @touchstart.prevent="showFooterModal = true">
+          <i class="iconfont icon-right icon"></i>
+          <ul>
+            <li v-for="(activity, i) in shopGoods.shopInfo.activityList" :key="i">
+              <i :class="activity.icon"></i>
+              <span v-html="activity.actDesc"></span>
+            </li>
+          </ul>
         </div>
       </div>
     </header>
     <img src="@img/msite_back.svg" v-else/>
     <section v-if="shopGoods.categoryList">
       <ul class="menu">
-        <li :class="{active: showModel === 0}" @touchstart="showModel = 0"><span>点菜</span></li>
-        <li :class="{active: showModel === 1}" @touchstart="showModel = 1"><span>评价</span></li>
-        <li :class="{active: showModel === 2}" @touchstart="showModel = 2"><span>商家</span></li>
+        <li :class="{active: currentModel === 0}" @touchstart="currentModel = 0"><span>点菜</span></li>
+        <li :class="{active: currentModel === 1}" @touchstart="currentModel = 1"><span>评价</span></li>
+        <li :class="{active: currentModel === 2}" @touchstart="currentModel = 2"><span>商家</span></li>
       </ul>
-      <Goods :list="shopGoods.categoryList" v-if="showModel === 0"/>
-      <Comments v-if="showModel === 1"/>
-      <Shop v-if="showModel === 2"/>
+      <Goods :list="shopGoods.categoryList" v-if="currentModel === 0"/>
+      <Comments v-if="currentModel === 1"/>
+      <Shop :footerData="shopGoods.shopInfo" v-if="currentModel === 2" @showfooter="showFooterModal = true"/>
     </section>
     <img src="@img/shop_back.svg" v-else/>
-    <footer v-if="shopGoods.shopInfo">
-      <div class="cart">
-        <i class="iconfont icon-cart"></i>
-      </div>
-      <span>另需配送费¥{{shopGoods.shopInfo.deliveryFee}}</span>
-      <span class="minFee">¥{{shopGoods.shopInfo.minFee}}起送</span>
-      <router-link to="" v-show="false">去结算</router-link>
+    <footer>
+      <Cart :shopInfo="shopGoods.shopInfo" v-show="currentModel === 0"/>
+      <Shade v-show="showFooterModal" @touchstart.prevent="showFooterModal = false" />
+      <FooterModal :shopInfo="shopGoods.shopInfo" v-show="showFooterModal"/>
     </footer>
   </section>
   <section v-else>
@@ -46,35 +55,34 @@
 /*
   商家页面
   需求:
-    1. 点击公告下方的活动条显示隐藏的模态框(组件都还没写)
     2. 点击评论label显示对应的评论(在 Comments 组件里写)
-    3. 商品展示, 加入购物车功能(在 Goods 组件里写,底部购物车的功能在这里写,也可以转移过去)
-    4. 商家详情功能(在 Shop 组件里写)
 */
-import { onBeforeMount, reactive, toRefs } from 'vue'
+import { reactive, toRefs, onBeforeMount } from 'vue'
 import { useStore } from 'vuex'
-import { useRouter, useRoute } from 'vue-router'
-import { Goods, Shop, Comments } from '@com/shopInfo'
+import { useRoute, useRouter } from 'vue-router'
+import { Goods, Shop, Comments, Cart } from '@com/shopInfo'
 export default {
   name: 'shopinfo',
-  components: { Goods, Shop, Comments },
+  components: { Goods, Shop, Comments, Cart },
   setup () {
     const store = useStore()
     const { params } = useRoute()
     const { push } = useRouter()
     const state = reactive({
       shopGoods: store.state.shopGoods,
-      showModel: 0
+      currentModel: 0,
+      showFooterModal: false
     })
 
     onBeforeMount(() => {
-      if (store.state.shopGoods) {
+      if (!state.shopGoods.shopInfo) {
         store.dispatch('getShopGoods', {
           shopId: params.id,
           callback (shopGoods) { state.shopGoods = shopGoods }
         })
       }
     })
+
     return { push, ...toRefs(state) }
   }
 }
@@ -110,11 +118,43 @@ export default {
         border-radius: rem(2);
       }
       .merchant-info{
-        padding-top: rem(20);
+        padding-top: rem(5);
         font-size: $min-size;
+        .journey{
+          @extend .flex;
+          justify-content: space-between;
+          img{
+            width: rem(50);
+            height: rem(15);
+            margin-top: 0;
+          }
+        }
         .affiche{
           @extend .nowrap;
           padding-top: rem(10);
+        }
+      }
+    }
+    .activitys{
+      height: rem(20);
+      margin-top: rem(8);
+      padding-right: rem(10);
+      overflow: hidden;
+      position: relative;
+      .icon{
+        position: absolute;
+        top: 50%;
+        right: rem(10);
+        transform: translateY(-50%);
+        font-size: $min-size;
+        color: $color4;
+      }
+      ul{
+        li{
+          display: flex;
+          align-items: center;
+          font-size: $min-size;
+          margin: rem(2) 0 rem(5);
         }
       }
     }
@@ -148,38 +188,6 @@ export default {
           }
         }
       }
-    }
-  }
-  footer{
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: rem(50);
-    background-color: $bg-color5;
-    padding-left: rem(70);
-    color: $color2;
-    @extend .flex;
-    justify-content: space-between;
-    .cart{
-      position: absolute;
-      left: rem(10);
-      bottom: rem(10);
-      width: rem(50);
-      height: rem(50);
-      text-align: center;
-      line-height: rem(50);
-      background-color: $color;
-      border-radius: rem(50);
-      i{
-        font-size: $max-size;
-        color: $color4;
-      }
-    }
-    .minFee{
-      padding: 0 rem(18);
-      font-size: $base-size;
-      font-weight: 600;
     }
   }
 }

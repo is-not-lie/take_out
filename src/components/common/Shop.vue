@@ -33,14 +33,14 @@
 </template>
 
 <script>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 export default {
   name: 'Shop',
   props: {
     shop: Object
   },
   setup (props) {
-    const score = ref(computed(() => props.shop.score.toString().split('').join('.')))
+    const score = computed(() => props.shop.score.toString().split('').join('.') * 1)
     return { score }
   }
 }

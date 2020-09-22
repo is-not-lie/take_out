@@ -17,9 +17,9 @@ import { useRouter } from 'vue-router'
 import { footerBar } from '@data'
 export default {
   name: 'FooterBar',
-  setup (props, ctx) {
+  setup () {
     const { push } = useRouter()
-    return { footerBar, push }
+    return { push, footerBar }
   }
 }
 </script>

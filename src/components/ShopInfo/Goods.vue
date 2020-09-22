@@ -2,60 +2,138 @@
   <section class="goods-container">
     <div class="category">
       <nav>
-        <a v-for="(category, i) in list" :key="i">
+        <a v-for="(category, i) in list" :key="i" :class="{active: currentIndex === i}" @click="menuClick(i)">
           <img :src="category.iconUrl" :alt="category.categoryName" v-if="category.iconUrl">
           {{category.categoryName}}
         </a>
       </nav>
     </div>
-    <div class="goods">
-      <h3 class="category-name">{{'热销'}}</h3>
-      <ul v-for="(category, i) in list" :key="i">
-        <li v-for="spu in category.spuList" :key="spu.spuId">
-          <img :src="spu.bigImageUrl" />
-          <div>
-            <p class="good-name">{{spu.spuName}}</p>
-            <p class="good-desc">{{spu.spuDesc}}</p>
-            <p>
-              <span v-html="`月售${spu.saleVolumeDecoded}`"></span>
-              <span v-html="`赞${spu.praiseNumDecoded}`"></span>
-            </p>
-            <p>
-              <span class="cur-pri">¥ {{spu.currentPrice}}</span>
-              <span class="unit">/{{spu.unit}}</span>
-              <del class="ori-pri">¥{{spu.originPrice}}</del>
-            </p>
-            <p class="spu-pro">
-              <span v-if="spu.spuPromotionInfo">{{spu.spuPromotionInfo}}</span>
-              <img v-for="(pictureUrl, i) in spu.productLabelPictureList" :key="i" :src="pictureUrl.pictureUrl" :style="{width: `${pictureUrl.width / 2}px`, height: `${pictureUrl.height / 2}px`}" />
-            </p>
-          </div>
-          <button></button>
+    <div class="goods" ref="goods">
+      <ul ref="goodUL">
+        <li v-for="(category, i) in list" :key="i">
+          <h3 class="category-name">{{category.categoryName}}</h3>
+          <ul>
+            <li class="food" v-for="spu in category.spuList" :key="spu.spuId">
+              <img :src="spu.bigImageUrl" @touchstart.prevent="showFood(spu)"/>
+              <div>
+                <p class="good-name">{{spu.spuName}}</p>
+                <p class="good-desc">{{spu.spuDesc}}</p>
+                <p>
+                  <span v-html="`月售${spu.saleVolumeDecoded}`"></span>
+                  <span v-html="`赞${spu.praiseNumDecoded}`"></span>
+                </p>
+                <p>
+                  <span class="cur-pri">¥ {{spu.currentPrice}}</span>
+                  <span class="unit">/{{spu.unit}}</span>
+                  <del class="ori-pri">¥{{spu.originPrice}}</del>
+                </p>
+                <p class="spu-pro">
+                  <span v-if="spu.spuPromotionInfo">{{spu.spuPromotionInfo}}</span>
+                  <img v-for="(pictureUrl, i) in spu.productLabelPictureList" :key="i" :src="pictureUrl.pictureUrl" :style="{width: `${pictureUrl.width / 2}px`, height: `${pictureUrl.height / 2}px`}" />
+                </p>
+              </div>
+              <div class="btns">
+                <CartControl :food="spu"/>
+              </div>
+            </li>
+          </ul>
         </li>
       </ul>
     </div>
+    <Modal v-show="showGoodModal" @close="showGoodModal = false">
+      <header>
+        <img class="modal-food-img" :src="food.littleImageUrl" :alt="food.spuName">
+      </header>
+      <section class="food-desc">
+        <p>{{food.spuName}}</p>
+        <p>
+          <span v-html="`月售${food.saleVolumeDecoded}`"></span>
+          <span class="praise-num" v-html="`赞${food.praiseNumDecoded}`"></span>
+        </p>
+        <div>
+          <img v-for="(pictureUrl, i) in food.productLabelPictureList" :key="i" :src="pictureUrl.pictureUrl" :style="{width: `${pictureUrl.width / 2}px`, height: `${pictureUrl.height / 2}px`}" />
+        </div>
+        <p>{{food.spuDesc}}</p>
+      </section>
+      <footer class="food-price">
+        <p>
+          <span class="cur-pri">¥{{food.currentPrice}}</span>
+          <span class="unit">/{{food.unit}}</span>
+        </p>
+        <button @touchstart.prevent="cartAdd(food)">加入购物车</button>
+      </footer>
+    </Modal>
   </section>
 </template>
 
 <script>
 /*
   商家商品列表组件
-  需求:
-    1. 顶部显示当前所在商品对应的分类
-    2. 实时更新分类导航样式
-    3. 点击对应分类导航移动到对应商品位置
-    4. 点击商品图片显示大图片模态框
-    5. 点击 + 按钮则商品数量 +1 并显示 - 按钮与商品数量, 点击 - 按钮则反过来..数量为 0 时隐藏 - 按钮
-    6. 底部购物车实时更新商品总价与商品数量
-    7. 当商品总价达到最低起送价时显示"去结算"按钮,并点击该按钮时跳转结算页面
 */
+import { getCurrentInstance, reactive, toRefs, computed, onMounted, nextTick } from 'vue'
+import { useStore } from 'vuex'
+import { initScroll, initTops } from '@js'
+import CartControl from './CartControl'
 export default {
   name: 'Goods',
   props: {
     list: Array
   },
+  components: { CartControl },
   setup () {
-    return {}
+    let scroll = null
+    const instance = getCurrentInstance()
+    const { dispatch } = useStore()
+    const state = reactive({
+      scrollY: 0,
+      tops: [],
+      showGoodModal: false,
+      food: {}
+    })
+
+    // 计算当前分类索引逻辑
+    const currentIndex = computed(() => {
+      const { scrollY, tops } = state
+      const index = tops.findIndex((top, i) => scrollY >= top && scrollY < tops[i + 1])
+      return index
+    })
+
+    // 分类导航点击回调
+    const menuClick = i => {
+      const { tops } = state
+      state.scrollY = tops[i]
+      // 滑动到指定位置函数
+      scroll.scrollTo(0, -tops[i], 400)
+    }
+
+    // 显示商品模态框函数
+    const showFood = spu => {
+      state.showGoodModal = true
+      state.food = spu
+    }
+
+    // 添加购物车函数
+    const cartAdd = (food) => {
+      if (food.count) food.count++
+      else food.count = 1
+      dispatch('updateCart', food)
+      state.showGoodModal = false
+    }
+
+    onMounted(() => {
+      // 异步调用 确保能拿到dom
+      nextTick(() => {
+        scroll = initScroll(instance.refs.goods)
+        // 监听滑动事件
+        scroll.on('scroll', ({ y }) => { state.scrollY = -y })
+        // 监听滑动停止事件
+        scroll.on('scrollEnd', ({ y }) => { state.scrollY = -y })
+        // 收集每个li的top值
+        state.tops = initTops(instance.refs.goodUL.children)
+      })
+    })
+
+    return { menuClick, ...toRefs(state), currentIndex, showFood, cartAdd }
   }
 }
 </script>
@@ -63,6 +141,7 @@ export default {
 <style lang="scss" scoped>
 .goods-container {
   display: flex;
+  max-height: 64vh;
   margin-bottom: rem(50);
   .category {
     width: rem(80);
@@ -88,15 +167,18 @@ export default {
   }
   .goods {
     flex: 1;
+    max-height: 100%;
+    overflow-y: hidden;
     .category-name {
       height: rem(36);
-      background-color: $bg-color2;
+      background-color: $bg-color6;
       line-height: rem(36);
       padding-left: rem(10);
+      margin-bottom: rem(10);
       font-size: $min-size;
       font-weight: 200;
     }
-    li {
+    .food {
       display: flex;
       position: relative;
       padding: 0 rem(10) rem(20);
@@ -160,18 +242,64 @@ export default {
           }
         }
       }
-      button {
+      .btns{
         position: absolute;
-        width: rem(25);
-        height: rem(25);
-        border-radius: rem(25);
-        background-image: url('~@img/btn-bg.png');
-        background-repeat: no-repeat;
-        background-size: cover;
-        border: none;
         right: rem(10);
-        bottom: rem(45);
+        bottom: rem(40);
       }
+    }
+  }
+  .modal-food-img{
+    width: 100%;
+    border-top-left-radius: rem(10);
+    border-top-right-radius: rem(10);
+  }
+  .food-desc{
+    padding: rem(10) rem(17) 0;
+    max-height: 100px;
+    overflow-y: auto;
+    p{
+      margin-bottom: rem(5);
+      font-size: $min-size;
+      &:nth-last-child(1){
+        margin: rem(10) 0 rem(16);
+      }
+      &:nth-child(1){
+        font-size: $base-size;
+        font-weight: 600;
+        @extend .nowrap;
+      }
+      .praise-num{
+        margin-left: rem(10);
+      }
+    }
+  }
+  .food-price{
+    position: relative;
+    padding: rem(8) rem(17);
+    @extend .flex;
+    justify-content: space-between;
+    background-color: $bot-bg-color;
+    border-bottom-left-radius: rem(10);
+    border-bottom-right-radius: rem(10);
+    .cur-pri{
+      font-size: $ls-size;
+      color: $color5;
+      line-height: rem(22);
+    }
+    .unit {
+      font-size: $min-size;
+      color: $color2;
+      line-height: rem(22);
+    }
+    button{
+      border: none;
+      background: #FFD161;
+      background-image: linear-gradient(-135deg, #FFBD27 0%, #FFD161 100%);
+      border-radius: rem(25);
+      font-size: $min-size;
+      padding: 0 rem(15);
+      height: rem(25);
     }
   }
 }

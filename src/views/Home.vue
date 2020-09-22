@@ -41,7 +41,7 @@
     5. 导航点击排序功能
     6. 点击分类导航跳转分类页面并展示对应分类商品
 */
-import { onBeforeMount, reactive, toRefs } from 'vue'
+import { reactive, toRefs, onBeforeMount } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { BASE_URL } from '@config'
@@ -54,7 +54,7 @@ export default {
       shopsList: store.state.shopsList,
       categorys: store.state.categorys,
       categoryMenu: store.state.categoryMenu,
-      pageNum: 1
+      pageNum: 1 // 这个是分页标识,用户上拉加载更多时要自增
     })
 
     onBeforeMount(() => {

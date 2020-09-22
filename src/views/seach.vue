@@ -52,7 +52,11 @@ export default {
     })
     const historySeach = ['尊宝宝马来榴莲披萨（古巷店）', '华莱士']
 
-    onBeforeMount(() => store.dispatch('getSeachLabels', (seachLabels) => { state.hotLabels = seachLabels?.hot }))
+    onBeforeMount(() => {
+      if (!state.hotLabels) {
+        store.dispatch('getSeachLabels', (seachLabels) => { state.hotLabels = seachLabels.hot })
+      }
+    })
 
     return { ...toRefs(state), historySeach, back }
   }

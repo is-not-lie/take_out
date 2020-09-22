@@ -18,6 +18,8 @@ export const http = {
   reqCity: () => axios.get('/city'),
   // 请求用户订单数据
   reqOrder: (userId) => axios.post('/order', { userId }),
+  // 请求删除用户订单
+  reqDelOrder: ({ orderId, userId }) => axios.post('/order/del', { orderId, userId }),
   // 请求商家商品列表信息数据
   reqShopGoods: (shopId) => axios.get('/shops/goods', { params: { shopId } }),
   // 请求商家评论数据

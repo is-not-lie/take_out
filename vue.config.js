@@ -19,7 +19,8 @@ module.exports = {
         '@img': path.resolve(__dirname, 'src/assets/images'),
         '@utils': path.resolve(__dirname, 'src/utils'),
         '@data': path.resolve(__dirname, 'src/data'),
-        '@com': path.resolve(__dirname, 'src/components')
+        '@com': path.resolve(__dirname, 'src/components'),
+        '@js': path.resolve(__dirname, 'src/commonJs')
       }
     }
   },

@@ -69,19 +69,18 @@ import { useRoute } from 'vue-router'
 export default {
   setup () {
     const store = useStore()
-    const route = useRoute()
+    const { params } = useRoute()
     const state = reactive({
       comments: store.state.comments
     })
 
     onBeforeMount(() => {
-      const { id } = route.params
+      const { id } = params
       store.dispatch('getShopComments', {
         shopId: id,
         callback (comments) { state.comments = comments }
       })
     })
-
     return toRefs(state)
   }
 }

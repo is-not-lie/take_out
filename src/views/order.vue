@@ -1,7 +1,7 @@
 <template>
-  <div class="order" v-if="user.token">
+  <div class="order" v-if="user.token && orderList">
     <section class="order-wrapper" v-for="order in orderList" :key="order.orderId">
-      <header class="order-header">
+      <header class="order-header" @touchstart.prevent="push({ name: 'shopinfo', params: { id: order.shopId } })">
         <img :src="order.img" :alt="order.shopName">
         <div class="shop-name">
           <span>{{order.shopName}}</span>
@@ -20,8 +20,8 @@
       </section>
       <footer class="order-footer">
         <span class="status">{{order.status}}</span>
-        <span class="again">再来一单</span>
-        <span class="del">删除</span>
+        <span class="again" @touchstart.prevent="push({ name: 'shopinfo', params: { id: order.shopId } })">再来一单</span>
+        <span class="del" @touchstart.prevent="delOrder(order.orderId)">删除</span>
       </footer>
     </section>
   </div>
@@ -43,14 +43,27 @@
 */
 import { reactive, toRefs, onBeforeMount } from 'vue'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 export default {
   name: 'order',
   setup () {
     const store = useStore()
+    const { push } = useRouter()
     const state = reactive({
       user: store.state.user,
       orderList: store.state.orderList
     })
+
+    const delOrder = (orderId) => {
+      // 这里要先弹框让用户确认(弹框组件还没写)
+      if (orderId) {
+        store.dispatch('delOrder', {
+          orderId,
+          userId: state.user._id,
+          callback (orderList) { state.orderList = orderList }
+        })
+      }
+    }
 
     onBeforeMount(() => {
       const { user } = state
@@ -59,7 +72,7 @@ export default {
       }
     })
 
-    return toRefs(state)
+    return { push, delOrder, ...toRefs(state) }
   }
 }
 </script>

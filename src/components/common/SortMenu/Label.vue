@@ -21,7 +21,7 @@
 /*
   筛选组件的选项卡, input框有问题...
 */
-import { reactive, toRefs, computed } from 'vue'
+import { computed } from 'vue'
 import { BASE_URL } from '@config'
 export default {
   props: {
@@ -30,14 +30,12 @@ export default {
     last: Boolean
   },
   setup (props, { emit }) {
-    const state = reactive({
-      iptType: computed(() => props.iptName.indexOf('单选') !== -1)
-    })
+    const iptType = computed(() => props.iptName.indexOf('单选') !== -1)
     const iptChange = (e) => {
       console.log(e.target.value)
       emit('input', e.target.value)
     }
-    return { BASE_URL, ...toRefs(state), iptChange }
+    return { BASE_URL, iptType, iptChange }
   }
 }
 </script>

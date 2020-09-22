@@ -1,7 +1,7 @@
 <template>
   <section class="login">
     <header class="logo">
-      <img src="../assets/images/login_logo.png" />
+      <img src="@img/login_logo.png" />
       <span>美团外卖</span>
     </header>
     <section>
@@ -12,22 +12,22 @@
       <form @submit.prevent="Login">
         <div class="login-phone" v-show="isPhoneLogin">
           <div class="phone">
-            <input type="tel" maxlength="11" placeholder="手机号码" v-model="phoneLogin.phone" />
-            <button type="button" :disabled="phoneLogin.isDisabled || sendCode" class="get-code" @click="getCode">{{!sendCode ? '获取验证码' : `已发送(${computeTime}s)`}}</button>
+            <input type="tel" maxlength="11" placeholder="手机号码" v-model="phone" />
+            <button type="button" :disabled="isDisabled || sendCode" class="get-code" @click="getCode">{{!sendCode ? '获取验证码' : `已发送(${computeTime}s)`}}</button>
           </div>
           <div class="code">
-            <input type="tel" maxlength='6' placeholder="验证码" v-model="phoneLogin.code" />
+            <input type="tel" placeholder="验证码" v-model="code" />
           </div>
         </div>
         <div class="login-pwd" v-show="!isPhoneLogin">
           <div class="name">
-            <input type="del" maxlength='11' minlength="6" placeholder="手机号/用户名" v-model="pwdLogin.username" />
+            <input type="del" placeholder="手机号/用户名" v-model="pwdLogin.username" />
           </div>
           <div class="pwd">
-            <input type="password" maxlength='14' minlength="6" placeholder="密码" v-model="pwdLogin.password" />
+            <input type="password" placeholder="密码" v-model="pwdLogin.password" />
           </div>
           <div class="captcha">
-            <input type="tel" placeholder="验证码" maxlength='4' v-model="pwdLogin.captcha" />
+            <input type="tel" placeholder="验证码" v-model="pwdLogin.captcha" />
             <span v-html="svg" @click="getCaptcha"></span>
           </div>
         </div>
@@ -37,7 +37,7 @@
         </div>
       </form>
     </section>
-    <span class="goback" @click="$router.back()">
+    <span class="goback" @click="back()">
       <i class="iconfont icon-left"></i>
     </span>
   </section>
@@ -48,109 +48,60 @@
   用户登录页面
   需求: 功能基本写完了, 就剩下输入验证和优化
 */
-import { reactive, toRefs, computed, onMounted } from 'vue'
+import { reactive, toRefs, onMounted, onBeforeUnmount } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import { http } from '@api'
+import { sendPhoneCode, clearInter } from '@js'
+import { captcha, loginVerify } from '@utils/login'
 export default {
   setup () {
     const { dispatch } = useStore()
-    const { replace } = useRouter()
+    const { replace, back } = useRouter()
     const state = reactive({
       isPhoneLogin: true,
-      phoneLogin: {
-        phone: '',
-        code: '',
-        isDisabled: computed(() => !/^1\d{10}$/.test(state.phoneLogin.phone))
-      },
+      code: '',
       pwdLogin: {
         username: '',
         password: '',
         captcha: ''
       },
-      sendCode: false,
-      computeTime: 60,
-      captcha: '',
-      svg: '',
-      CAPTCHA: ''
+      svg: ''
     })
+    const phoneState = sendPhoneCode()
+    // 获取svg验证码
+    const getCaptcha = captcha(300, (svg) => { state.svg = svg })
 
-    const Login = () => {
-      const { isPhoneLogin } = state
-      if (isPhoneLogin) {
-        const { phone, code, isDisabled } = state.phoneLogin
-        if (code !== state.CAPTCHA) {
-          console.log('验证码输入错误')
-        } else if (isDisabled) {
-          console.log('手机号格式错误')
-        } else {
+    const Login = async () => {
+      const { isPhoneLogin, code } = state
+      const phone = phoneState.phone?.value
+      const { username, password, captcha } = state.pwdLogin
+      try {
+        if (isPhoneLogin) {
+          await loginVerify({ phone, code })
           dispatch('login', {
             params: { phone },
             type: 'login',
             callback: () => replace('/')
           })
-        }
-      } else {
-        const { username, password, captcha } = state.pwdLogin
-        if (captcha.toLowerCase() !== state.captcha) {
-          console.log('验证码输入错误')
-          getCaptcha()
-        } else if (username.trim() === '' || username.length < 6) {
-          console.log('用户名格式错误')
-        } else if (password.trim() === '' || password.length < 6) {
-          console.log('密码格式错误')
         } else {
+          await loginVerify({ username, password, captcha })
           dispatch('login', {
             params: { username, password },
             type: 'login',
             callback: () => replace('/')
           })
         }
-      }
-    }
-    // 获取svg验证码
-    const getCaptcha = (() => {
-      let timeKey = null
-      return () => {
-        if (timeKey) clearTimeout(timeKey)
-        timeKey = setTimeout(async () => {
-          const svg = await http.reqCaptcha()
-          if (svg) {
-            state.captcha = svg.text.toLowerCase()
-            state.svg = svg.data
-          }
-          timeKey = null
-        }, 300)
-      }
-    })()
-    // 发送短信验证码
-    const getCode = async () => {
-      const { isDisabled, phone } = state.phoneLogin
-      if (isDisabled) {
-        console.log('手机号格式错误')
-      } else {
-        state.sendCode = true
-        const CAPTCHA = await http.reqSendCode(phone)
-        const intervalKey = setInterval(() => {
-          state.computeTime--
-          if (CAPTCHA || state.computeTime <= 0) {
-            clearInterval(intervalKey)
-            state.sendCode = false
-            state.computeTime = 60
-            state.CAPTCHA = CAPTCHA || ''
-          }
-        }, 1000)
+      } catch (err) {
+        console.log(err)
+        if (!isPhoneLogin) getCaptcha()
       }
     }
 
     onMounted(getCaptcha)
+    // 组件销毁前关闭定时器,防止用户点击发送验证码后跑别的页面去
+    onBeforeUnmount(clearInter)
 
-    return {
-      Login,
-      getCaptcha,
-      getCode,
-      ...toRefs(state)
-    }
+    return { Login, getCaptcha, ...phoneState, ...toRefs(state), back }
   }
 }
 </script>

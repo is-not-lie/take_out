@@ -1,5 +1,6 @@
 import { http } from '@api'
 import { isFun } from '@utils/types'
+import { cartStorage } from '@utils/storage/user'
 
 // 获取首页商家列表
 export const getShopsList = async ({ commit, state }, data) => {
@@ -38,4 +39,15 @@ export const getShopInfo = async ({ commit }, data) => {
     commit('COMMIT', { key: 'shopInfo', val: shopInfo })
     isFun(callback) && callback(shopInfo)
   }
+}
+// 更新购物车
+export const updateCart = ({ commit, state }, food) => {
+  const { userCart } = state
+  if (userCart.indexOf(food) === -1) {
+    userCart.push(food)
+  } else {
+    userCart[userCart.indexOf(food)] = food
+  }
+  cartStorage.set(userCart)
+  commit('COMMIT', { key: 'userCart', val: userCart })
 }

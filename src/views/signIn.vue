@@ -36,10 +36,11 @@
     1. 输入验证....
     2. 验证码(已完成,虽然把验证码给前端不安全,但是也不是正式项目就算了)
 */
-import { reactive, toRefs, computed } from 'vue'
+import { reactive, toRefs, onBeforeUnmount } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import { http } from '@api'
+import { sendPhoneCode, clearInter } from '@js'
+import { signInVerify } from '@utils/login'
 export default {
   name: 'signin',
   setup () {
@@ -48,55 +49,28 @@ export default {
     const state = reactive({
       username: '',
       password: '',
-      phone: '',
-      code: '',
-      sendCode: false,
-      isDisabled: computed(() => !/^1\d{10}$/.test(state.phone)),
-      computeTime: 60,
-      CAPTCHA: ''
+      code: ''
     })
-
-    const getCode = async () => {
-      const { isDisabled, phone } = state
-      if (isDisabled) {
-        console.log(1)
-      } else {
-        state.sendCode = true
-        const CAPTCHA = await http.reqSendCode(phone)
-        const intervalKey = setInterval(() => {
-          state.computeTime--
-          if (CAPTCHA || state.computeTime <= 0) {
-            clearInterval(intervalKey)
-            state.sendCode = false
-            state.computeTime = 60
-            state.CAPTCHA = CAPTCHA || ''
-          }
-        }, 1000)
-      }
-    }
+    const phoneState = sendPhoneCode()
 
     const singIn = async () => {
-      const { username, password, phone, code, CAPTCHA, isDisabled } = state
-      if (!code === CAPTCHA) {
-        console.log('验证码输入错误')
-      } else if (!password) {
-        console.log('密码不能为空')
-      } else if (!phone || isDisabled) {
-        console.log('手机号码格式错误')
-      } else {
+      const { username, password, code } = state
+      const phone = phoneState.phone.value
+      try {
+        await signInVerify({ username, password, phone, code })
         store.dispatch('login', {
           params: { username, password, phone },
           type: 'signIn',
           callback: () => replace('/')
         })
+      } catch (err) {
+        console.log(err)
       }
     }
+    // 组件销毁前关闭定时器,防止用户点击发送验证码后跑别的页面去
+    onBeforeUnmount(clearInter)
 
-    return {
-      getCode,
-      singIn,
-      ...toRefs(state)
-    }
+    return { ...phoneState, singIn, ...toRefs(state) }
   }
 }
 </script>

@@ -1,9 +1,9 @@
 import { login, loginOut } from './user'
 import { getCity } from './city'
 import { getCategorys, getCategoryMenu } from './category'
-import { getOrder } from './order'
+import { getOrder, delOrder } from './order'
 import { getSeachLabels } from './seach'
-import { getShopsList, getShopGoods, getShopComments, getShopInfo } from './shop'
+import { getShopsList, getShopGoods, getShopComments, getShopInfo, updateCart } from './shop'
 
 export default {
   login,
@@ -12,9 +12,11 @@ export default {
   getCategorys,
   getCategoryMenu,
   getOrder,
+  delOrder,
   getSeachLabels,
   getShopsList,
   getShopGoods,
   getShopComments,
-  getShopInfo
+  getShopInfo,
+  updateCart
 }

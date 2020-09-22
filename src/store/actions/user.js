@@ -1,7 +1,6 @@
 import { http } from '@api'
-import Storage from '@utils/storage'
+import { userStorage } from '@utils/storage/user'
 import { isFun } from '@utils/types'
-const userStorage = new Storage('user')
 
 // 用户注册与登录
 export const login = async ({ commit }, data) => {

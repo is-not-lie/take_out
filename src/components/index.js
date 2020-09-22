@@ -6,6 +6,9 @@ import FooterLoding from './common/FooterLoding.vue'
 import SortMenu from './common/SortMenu/SortMenu.vue'
 import Seach from './common/Seach.vue'
 import Shop from './common/Shop.vue'
+import Modal from './common/Modal.vue'
+import FooterModal from './common/FooterModal.vue'
+import Shade from './common/Shade.vue'
 
 const components = [
   FooterBar,
@@ -14,7 +17,10 @@ const components = [
   SortMenu,
   Seach,
   Shop,
-  FooterLoding
+  FooterLoding,
+  Modal,
+  FooterModal,
+  Shade
 ]
 
 export default Vue => components.forEach(component => Vue.component(component.name, component))

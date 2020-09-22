@@ -4,7 +4,7 @@
 
 <script>
 // 星星图片组件,已完成
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 export default {
   name: 'Star',
   props: {
@@ -15,18 +15,12 @@ export default {
     const starClass = computed(() => {
       const score = props.score.toString().split('').join('.') * 1
       const className = []
-      for (let i = 0; i < Math.floor(score); i++) {
-        className.push('on')
-      }
-      if (score * 10 - Math.floor(score) * 10 >= 5) {
-        className.push('half')
-      }
-      while (className.length < 5) {
-        className.push('off')
-      }
+      for (let i = 0; i < Math.floor(score); i++) { className.push('on') }
+      if (score * 10 - Math.floor(score) * 10 >= 5) { className.push('half') }
+      while (className.length < 5) { className.push('off') }
       return className
     })
-    return { starClass: ref(starClass) }
+    return { starClass }
   }
 }
 </script>

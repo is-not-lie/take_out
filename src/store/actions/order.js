@@ -10,3 +10,14 @@ export const getOrder = async ({ commit }, data) => {
     isFun(callback) && callback(orderList)
   }
 }
+
+export const delOrder = async ({ commit, state }, data) => {
+  const { orderId, userId, callback } = data
+  const result = await http.reqDelOrder({ orderId, userId })
+  if (result) {
+    const { orderList } = state
+    orderList.splice(orderList.findIndex((order) => order.orderId === orderId), 1)
+    commit('COMMIT', { key: 'orderList', val: orderList })
+    isFun(callback) && callback(orderList)
+  }
+}

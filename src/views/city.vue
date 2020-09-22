@@ -61,9 +61,11 @@ export default {
       citys: store.state.citys
     })
 
-    onBeforeMount(() => store.dispatch('getCity', (citys) => {
-      state.citys = citys
-    }))
+    onBeforeMount(() => {
+      if (!state.citys.classify_nav) {
+        store.dispatch('getCity', (citys) => { state.citys = citys })
+      }
+    })
 
     return toRefs(state)
   }

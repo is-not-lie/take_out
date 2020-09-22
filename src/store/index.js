@@ -1,11 +1,10 @@
 import { createStore } from 'vuex'
 import actions from './actions'
-import Storage from '@utils/storage'
-const user = new Storage('user')
+import { userStorage, cartStorage } from '@utils/storage/user'
 
 export default createStore({
   state: {
-    user: user.value,
+    user: userStorage.value,
     categoryMenu: [],
     citys: [],
     orderList: [],
@@ -14,7 +13,8 @@ export default createStore({
     shopInfo: {},
     shopsList: {},
     categorys: {},
-    seachLabels: {}
+    seachLabels: {},
+    userCart: cartStorage.value
   },
   mutations: { COMMIT (state, { key, val }) { state[key] = val } },
   actions,

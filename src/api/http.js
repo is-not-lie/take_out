@@ -1,14 +1,14 @@
 import axios from 'axios'
 import error from './error'
-import Storage from '@utils/storage'
-const user = new Storage('user')
+import { userStorage } from '@utils/storage/user'
+
 const instance = axios.create({
   baseURL: '/api',
   timeout: 3000
 })
 
 instance.interceptors.request.use(config => {
-  const { token } = user.value
+  const { token } = userStorage.value
   if (token) config.headers.Authorization = `take_out${token}`
   return config
 })

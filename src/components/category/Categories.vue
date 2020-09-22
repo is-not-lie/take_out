@@ -40,10 +40,13 @@ export default {
   setup (props) {
     const state = reactive({
       showCateId: 910,
-      subActive: 910,
-      subCateList: computed(() => props.categories?.map(category => category.subCate))
+      subActive: 910
     })
-    return toRefs(state)
+    const subCateList = computed(() => props.categories?.map(category => category.subCate))
+    return {
+      ...toRefs(state),
+      subCateList
+    }
   }
 }
 </script>
