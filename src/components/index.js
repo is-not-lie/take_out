@@ -9,6 +9,7 @@ import Shop from './common/Shop.vue'
 import Modal from './common/Modal.vue'
 import FooterModal from './common/FooterModal.vue'
 import Shade from './common/Shade.vue'
+import Alert from './common/Alert.vue'
 
 const components = [
   FooterBar,
@@ -20,7 +21,8 @@ const components = [
   FooterLoding,
   Modal,
   FooterModal,
-  Shade
+  Shade,
+  Alert
 ]
 
 export default Vue => components.forEach(component => Vue.component(component.name, component))

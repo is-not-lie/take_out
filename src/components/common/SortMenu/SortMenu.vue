@@ -1,5 +1,5 @@
 <template>
-  <nav>
+  <nav ref="nav" @touchstart="navClick">
     <ul class="sort-menu">
       <li v-for="(menu,i) in sortMenu" :key="i" @touchstart.prevent="showChildren(i)">
         <span>{{menu.name}}</span>
@@ -26,13 +26,13 @@
       </div>
     </section>
   </nav>
-  <div class="shade" v-show="showStor || showFilter"></div>
+  <Shade @touchstart.self="showStor = showFilter = false" v-show="showStor || showFilter" />
 </template>
 
 <script>
 /*
   排序导航组件
-  需求: 点击时将位置置于顶部,并按点击的响应功能对商品进行排序
+  需求: 排序功能(后台没搞好)
 */
 import { reactive, toRefs } from 'vue'
 import { sortMenu } from '@data'
@@ -51,6 +51,11 @@ export default {
       showFilter: false,
       iptVal: ['', [], '']
     })
+
+    const navClick = () => {
+      document.documentElement.scrollTop = 220
+    }
+
     const showChildren = i => {
       const lastChildren = sortMenu.length - 1
       switch (i) {
@@ -71,7 +76,8 @@ export default {
           break
       }
     }
-    return { sortMenu, showChildren, ...toRefs(state) }
+
+    return { sortMenu, showChildren, navClick, ...toRefs(state) }
   }
 }
 </script>
@@ -80,7 +86,7 @@ export default {
 nav{
   position: relative;
   width: 100%;
-  z-index: 1;
+  z-index: 10;
   .sort-menu{
     @extend .flex;
     @include border-y-1px;
@@ -141,13 +147,5 @@ nav{
       }
     }
   }
-}
-.shade{
-  position: fixed;
-  top: rem(50);
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba($color: #000000, $alpha: .8);
 }
 </style>

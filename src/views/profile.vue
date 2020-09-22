@@ -18,6 +18,9 @@
       前往登录
     </router-link>
   </div>
+  <Alert v-show="showAlert" @handleclick="alertClick">
+    <p class="alert-text">确定要退出登录吗?</p>
+  </Alert>
 </template>
 
 <script>
@@ -38,8 +41,23 @@ export default {
     const store = useStore()
     const { replace, push } = useRouter()
     const state = reactive({
-      user: store.state.user
+      user: store.state.user,
+      showAlert: false
     })
+
+    const alertClick = (type) => {
+      switch (type) {
+        case 'close':
+          state.showAlert = false
+          break
+        case 'ok':
+          state.showAlert = false
+          loginOut()
+          break
+        default:
+          break
+      }
+    }
 
     const loginOut = () => {
       store.dispatch('loginOut')
@@ -52,14 +70,14 @@ export default {
           push({ name: 'position', params: { id: state.user._id } })
           break
         case 'loginOut':
-          loginOut()
+          state.showAlert = true
           break
         default:
           break
       }
     }
 
-    return { proMenu, BASE_URL, handleClick, ...toRefs(state) }
+    return { proMenu, BASE_URL, handleClick, alertClick, ...toRefs(state) }
   }
 }
 </script>
@@ -117,5 +135,9 @@ export default {
   p{
     margin: rem(20) 0;
   }
+}
+.alert-text{
+  padding: rem(25);
+  font-size: $sm-size;
 }
 </style>
