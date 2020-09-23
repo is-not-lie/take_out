@@ -1,6 +1,7 @@
 import axios from 'axios'
 import error from './error'
 import { userStorage } from '@utils/storage/user'
+// import { BASE_URL } from '@config'
 
 const instance = axios.create({
   baseURL: '/api',

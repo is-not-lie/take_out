@@ -1,5 +1,6 @@
-import { reactive, computed, toRefs } from 'vue'
+import { reactive, computed, toRefs, onMounted, nextTick } from 'vue'
 import { sendCode } from '@utils/login'
+import { debounce } from '@utils/optimize'
 import BetterScroll from 'better-scroll'
 let timer = null // 保存定时器标识
 // 发送短信验证码函数
@@ -45,11 +46,38 @@ export const initScroll = (target) => {
 
 export const initTops = (target) => {
   const tops = []
-  let top = 0
-  tops.push(top)
-  Object.values(target).forEach(item => {
-    top += item.clientHeight
+  Object.values(target).reduce((top, item) => {
     tops.push(top)
-  })
+    return top + item.clientHeight
+  }, 0)
   return tops
+}
+
+// 上拉加载逻辑
+export const update = (callback) => {
+  const state = reactive({
+    scrollTop: 0,
+    scrollHeight: 0
+  })
+
+  const start = e => {
+    const offsetHeight = document.documentElement.offsetHeight
+    const clientHeight = document.documentElement.clientHeight
+    state.scrollHeight = offsetHeight - clientHeight
+  }
+  const move = debounce(e => {
+    state.scrollTop = window.scrollY
+    if (Math.ceil(state.scrollTop) >= state.scrollHeight) {
+      callback(e)
+    }
+  }, 600)
+
+  onMounted(() => {
+    nextTick(() => {
+      document.documentElement.addEventListener('touchstart', start)
+      document.documentElement.addEventListener('touchmove', move)
+    })
+  })
+
+  return { ...toRefs(state), start, move }
 }

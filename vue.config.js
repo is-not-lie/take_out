@@ -2,7 +2,7 @@ const path = require('path')
 
 const dirPath = {
   development: '/',
-  production: 'http://localhost:4000'
+  production: '/'
 }
 
 module.exports = {

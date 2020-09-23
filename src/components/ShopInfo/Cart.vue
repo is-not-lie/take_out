@@ -5,15 +5,13 @@
       <span v-show="count">{{count}}</span>
     </div>
     <div class="price">
-      <span v-show="count" class="total-price"><span>¥</span>{{totalPrice}}<del>¥{{originTotalPrice}}</del></span>
-      <span :class="{min: !!count}">另需配送费¥{{shopInfo.deliveryFee}}</span>
+      <span v-show="count" class="total-price">
+        <span>¥</span>{{totalPrice}}<del>¥{{originTotalPrice}}</del>
+      </span>
+      <span :class="{min: count}">另需配送费¥{{shopInfo.deliveryFee}}</span>
     </div>
-    <div class="min-price"
-    :class="[{minFee: priceSpread > 0 && priceSpread !== shopInfo.minFee}, {gopay: totalPrice >= shopInfo.minFee}]"
-    @touchstart.prevent="goPay(shopInfo.minFee)">
-      <span v-show="!count">¥{{shopInfo.minFee}}起送</span>
-      <span v-show="priceSpread > 0 && priceSpread !== shopInfo.minFee">还差¥{{priceSpread}}起送</span>
-      <span v-show="totalPrice >= shopInfo.minFee">去结算</span>
+    <div class="min-price" :class="payClass" @touchstart.prevent="goPay">
+      <span>{{payText}}</span>
     </div>
   </footer>
 </template>
@@ -28,49 +26,49 @@ export default {
   setup (props) {
     const store = useStore()
     const { push } = useRouter()
-    const state = reactive({
-      cart: store.state.userCart
-    })
+    const state = reactive({ cart: store.state.userCart })
     // 总价格
     const totalPrice = computed(() => {
-      let price = 0
-      const { cart } = state
-      cart.forEach(food => {
-        price += food.count * food.currentPrice
-      })
-      return Math.floor(price * 100) / 100
+      const totalPrice = state.cart.reduce((price, food) => price + food.count * food.currentPrice, 0)
+      return Math.floor(totalPrice * 100) / 100
     })
     // 折扣前总价
     const originTotalPrice = computed(() => {
-      let originPrice = 0
-      const { cart } = state
-      cart.forEach(food => {
-        originPrice += food.originPrice * food.count
-      })
-      return Math.floor(originPrice * 100) / 100
+      const originTotalPrice = state.cart.reduce((price, food) => price + food.originPrice * food.count, 0)
+      return Math.floor(originTotalPrice * 100) / 100
     })
     // 计算还差多少金额达到起送价
     const priceSpread = computed(() => {
-      const { minFee } = props.shopInfo
-      const price = minFee - totalPrice.value
-      return Math.floor(price * 100) / 100
+      const priceSpread = props.shopInfo.minFee - totalPrice.value
+      return Math.floor(priceSpread * 100) / 100
     })
     // 总数量
-    const count = computed(() => {
-      let count = 0
-      const { cart } = state
-      cart.forEach(food => {
-        count += food.count
-      })
-      return count
+    const count = computed(() => state.cart.reduce((count, food) => count + food.count, 0))
+    // 计算购物车右边样式的类名
+    const payClass = computed(() => {
+      const { minFee } = props.shopInfo
+      const price = priceSpread.value
+      const totle = totalPrice.value
+      if (price > 0 && price !== minFee) return 'minFee'
+      else if (totle >= minFee) return 'gopay'
+      else return ''
+    })
+    // 计算购物车右边显示文本
+    const payText = computed(() => {
+      const { minFee } = props.shopInfo
+      const price = priceSpread.value
+      const total = totalPrice.value
+      if (price > 0 && price !== minFee) return `还差¥${price}起送`
+      else if (total >= minFee) return '去结算'
+      else return `¥${minFee}起送`
     })
     // 点击跳转结算页逻辑
-    const goPay = (minFee) => {
-      if (totalPrice.value >= minFee) {
-        push({ name: 'pay' })
-      }
+    const goPay = () => {
+      const { minFee } = props.shopInfo
+      if (totalPrice.value >= minFee) push({ name: 'pay' })
     }
-    return { ...toRefs(state), totalPrice, originTotalPrice, priceSpread, count, goPay }
+
+    return { ...toRefs(state), totalPrice, originTotalPrice, priceSpread, count, goPay, payText, payClass }
   }
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <nav ref="nav" @touchstart="navClick">
+  <nav @touchstart="navClick">
     <ul class="sort-menu">
       <li v-for="(menu,i) in sortMenu" :key="i" @touchstart.prevent="showChildren(i)">
         <span>{{menu.name}}</span>
@@ -41,7 +41,8 @@ export default {
   name: 'SortMenu',
   props: {
     sortList: Array,
-    filterList: Array
+    filterList: Array,
+    scrollY: Number
   },
   components: { Label },
   setup (props, { emit }) {
@@ -53,7 +54,8 @@ export default {
     })
 
     const navClick = () => {
-      document.documentElement.scrollTop = 220
+      const { scrollY } = props
+      document.documentElement.scrollTop = scrollY
     }
 
     const showChildren = i => {
@@ -77,7 +79,7 @@ export default {
       }
     }
 
-    return { sortMenu, showChildren, navClick, ...toRefs(state) }
+    return { sortMenu, showChildren, ...toRefs(state), navClick }
   }
 }
 </script>

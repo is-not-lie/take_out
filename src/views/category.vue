@@ -5,24 +5,30 @@
         <Seach />
       </router-link>
     </header>
-    <div class="category-labels" v-if="categorys">
+    <div class="category-labels">
       <ul class="category-list">
-        <li class="icon" @touchstart="showCategories = !showCategories">
+        <li class="icon" @touchstart="showAllCate">
           <i class="iconfont icon-bottom"></i>
         </li>
         <li :class="{active: cate.cateId === 0}" v-for="cate in categorys.categories" :key="cate.cateId">
           {{cate.name}}
         </li>
       </ul>
-      <Categories v-show="showCategories" :categories="categorys.categories"/>
-      <SortMenu :sortList="categorys.sortVOList" :filterList="categorys.multifilterVOList"/>
     </div>
-    <img src="@img/shop_back.svg" v-else/>
+    <Categories v-show="showCategories" :categories="categorys.categories"/>
+    <div class="sort-menu-container">
+      <SortMenu
+        :scrollY="50"
+        :sortList="categorys.sortVOList"
+        :filterList="categorys.multifilterVOList"
+      />
+    </div>
     <section class="shops" v-if="shopsList">
       <Shop  v-for="shop in shopsList.list" :key="shop._id" :shop="shop"/>
     </section>
     <Loding v-else />
     <FooterLoding v-show="true"/>
+    <Shade v-show="showCategories" @touchstart.self="showCategories = false"/>
   </section>
 </template>
 
@@ -48,6 +54,11 @@ export default {
       pageNum: 1,
       showCategories: false
     })
+    // 显示隐藏的全部分类列表框
+    const showAllCate = () => {
+      state.showCategories = !state.showCategories
+      document.documentElement.scrollTop = 40
+    }
 
     onBeforeMount(() => {
       // 如果store里有数据就从store里拿,没有再发请求
@@ -62,7 +73,7 @@ export default {
       }
     })
 
-    return { ...toRefs(state) }
+    return { ...toRefs(state), showAllCate }
   }
 }
 </script>
@@ -75,7 +86,7 @@ header{
   position: sticky;
   top: 0;
   left: 0;
-  z-index: 1;
+  z-index: 3;
   background-color: $bg-color2;
   .category-list{
     display: flex;
@@ -108,5 +119,11 @@ header{
     }
   }
 }
-
+.sort-menu-container{
+  position: sticky;
+  top: rem(40);
+  left: 0;
+  z-index: 1;
+  background-color: $bg-color2;
+}
 </style>

@@ -8,7 +8,7 @@
       </div>
       <ul class="category-list" v-if="categoryMenu">
         <li v-for="item in categoryMenu" :key="item._id">
-          <router-link :to="{ name: 'category', params: { id: item._id } }">
+          <router-link :to="{ name: 'category', params: { id: item.cateId } }">
             <img :src="`${BASE_URL}${item.img}`" :alt="item.name">
             <span>{{item.name}}</span>
           </router-link>
@@ -19,13 +19,21 @@
     </header>
     <section class="home-main">
       <header class="menu">
-        <SortMenu :sortList="categorys.sortVOList" :filterList="categorys.multifilterVOList"/>
+        <SortMenu
+          :scrollY="220"
+          :sortList="categorys.sortVOList"
+          :filterList="categorys.multifilterVOList"
+        />
       </header>
       <template v-if="shopsList">
-        <Shop  v-for="shop in shopsList.list" :key="shop._id" :shop="shop"/>
+        <Shop v-for="shop in shopsList.list" :key="shop._id" :shop="shop"/>
       </template>
       <Loding v-else />
-      <FooterLoding v-show="true" />
+      <footer>
+        <span v-show="!showLoding && !noData">上拉加载更多哦</span>
+        <FooterLoding v-show="showLoding" />
+        <span v-show="noData">已经没有更多的商家数据啦...</span>
+      </footer>
     </section>
   </section>
 </template>
@@ -37,7 +45,6 @@
     1. 加载后请求用户定位并显示
     2. 当顶部导航触碰到排序导航时隐藏定位信息,显示搜索框
     3. 点击顶部导航跳转定位页面 || 搜索页面
-    4. 下拉加载更多商家,加载时显示加载中,数据回来后隐藏
     5. 导航点击排序功能
     6. 点击分类导航跳转分类页面并展示对应分类商品
 */
@@ -45,6 +52,7 @@ import { reactive, toRefs, onBeforeMount } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { BASE_URL } from '@config'
+import { update } from '@js'
 export default {
   name: 'home',
   setup () {
@@ -54,7 +62,27 @@ export default {
       shopsList: store.state.shopsList,
       categorys: store.state.categorys,
       categoryMenu: store.state.categoryMenu,
-      pageNum: 1 // 这个是分页标识,用户上拉加载更多时要自增
+      showLoding: false,
+      pageNum: 1, // 这个是分页标识,用户上拉加载更多时要自增
+      noData: false
+    })
+    const updateState = update(() => {
+      const { pageSize, pageNum, total } = state.shopsList
+      if (Math.round(total / pageSize) === pageNum) {
+        state.noData = true
+      } else {
+        state.pageNum++
+        state.showLoding = true
+        setTimeout(() => {
+          store.dispatch('getShopsList', {
+            pageNum: state.pageNum,
+            callback (shopsList) {
+              state.shopsList = shopsList
+              state.showLoding = false
+            }
+          })
+        }, 400)
+      }
     })
 
     onBeforeMount(() => {
@@ -73,7 +101,7 @@ export default {
       }
     })
 
-    return { ...toRefs(state), BASE_URL, push }
+    return { ...toRefs(state), BASE_URL, push, ...updateState }
   }
 }
 </script>
@@ -140,11 +168,16 @@ export default {
   }
   .home-main{
     margin-bottom: rem(50);
-  }
-  .menu{
-    position: sticky;
-    top: rem(50);
-    z-index: 1;
+    .menu{
+      position: sticky;
+      top: rem(50);
+      z-index: 1;
+    }
+    footer{
+      @extend .flex;
+      height: rem(45);
+      font-size: $base-size;
+    }
   }
 }
 </style>

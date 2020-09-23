@@ -32,13 +32,15 @@
     </router-link>
     <p>当前尚未登录,请登录后查看订单</p>
   </div>
+  <Alert v-show="showAlert" @handleclick="alertClick">
+    <p class="alert-text">确定要删除该订单吗?</p>
+  </Alert>
 </template>
 
 <script>
 /*
   用户订单页面
   需求:
-    1. 点击删除时删除该订单
     2. 点击再来一单时跳转对应商家页面并勾选对应商品,若对应商品已停售则提醒用户
 */
 import { reactive, toRefs, onBeforeMount } from 'vue'
@@ -51,17 +53,42 @@ export default {
     const { push } = useRouter()
     const state = reactive({
       user: store.state.user,
-      orderList: store.state.orderList
+      orderList: store.state.orderList,
+      showAlert: false,
+      orderId: null
     })
-
-    const delOrder = (orderId) => {
-      // 这里要先弹框让用户确认(弹框组件还没写)
+    // 删除订单
+    const del = () => {
+      const { orderId, user } = state
       if (orderId) {
         store.dispatch('delOrder', {
           orderId,
-          userId: state.user._id,
-          callback (orderList) { state.orderList = orderList }
+          userId: user._id,
+          callback (orderList) {
+            state.orderList = orderList
+            state.orderId = null
+          }
         })
+      }
+    }
+    // 显示弹框提示
+    const delOrder = (orderId) => {
+      state.showAlert = true
+      state.orderId = orderId
+    }
+    // 弹框确认/取消
+    const alertClick = type => {
+      switch (type) {
+        case 'close':
+          state.showAlert = false
+          break
+        case 'ok':
+          state.showAlert = false
+          del()
+          break
+        default:
+          state.showAlert = false
+          break
       }
     }
 
@@ -72,7 +99,7 @@ export default {
       }
     })
 
-    return { push, delOrder, ...toRefs(state) }
+    return { push, delOrder, ...toRefs(state), alertClick }
   }
 }
 </script>
@@ -162,5 +189,8 @@ export default {
     margin: rem(20) 0;
     border-radius: rem(5);
   }
+}
+.alert-text{
+  padding: rem(25);
 }
 </style>

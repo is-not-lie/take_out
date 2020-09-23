@@ -1,8 +1,8 @@
 <template>
-  <footer>
+  <div class="loding-container">
     <div class="loding"></div>
     <span>正在加载...</span>
-  </footer>
+  </div>
 </template>
 
 <script>
@@ -15,7 +15,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-footer{
+.loding-container{
   @extend .flex;
   height: rem(45);
   .loding{

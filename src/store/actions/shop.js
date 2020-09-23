@@ -43,11 +43,10 @@ export const getShopInfo = async ({ commit }, data) => {
 // 更新购物车
 export const updateCart = ({ commit, state }, food) => {
   const { userCart } = state
-  if (userCart.indexOf(food) === -1) {
-    userCart.push(food)
-  } else {
-    userCart[userCart.indexOf(food)] = food
-  }
+  const index = userCart.indexOf(food)
+  if (index === -1) userCart.push(food)
+  else if (index !== -1 && food.count <= 0) userCart.splice(index, 1)
+  else userCart[index] = food
   cartStorage.set(userCart)
   commit('COMMIT', { key: 'userCart', val: userCart })
 }
